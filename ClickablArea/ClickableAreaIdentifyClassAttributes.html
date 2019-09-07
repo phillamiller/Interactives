@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+	var numCorrectUnsellected = 0;
+	var numIncorrectSelected = 0;
+	var highlight_color = "gold";
+	
+	function handle_click(elem) {
+		var selected = elem.getAttribute("data-selected") == "true";
+		elem.setAttribute("data-selected", (!selected).toString());
+		
+		update_state();
+		update_ui();
+		check();
+	}
+	
+	function update_state() {
+		numCorrectUnsellected = 0;
+		numIncorrectSelected = 0;
+		
+		var elems = document.getElementsByClassName("clickable_text");
+		
+		for(idx = 0; idx < elems.length; idx++){
+			var elem = elems[idx];
+			var selected = elem.getAttribute("data-selected") == "true";
+			var is_click = elem.getAttribute("data-type") == "click";
+			
+			if (is_click && !selected)
+				numCorrectUnsellected++;
+			if (!is_click && selected)
+				numIncorrectSelected++;
+		}
+		
+		if (numCorrectUnsellected + numIncorrectSelected > 0)
+			highlight_color = "gold";
+		else
+			highlight_color = "lime";
+	}
+	
+	function update_ui() {
+		var elems = document.getElementsByClassName("clickable_text");
+		for(idx = 0; idx < elems.length; idx++){
+			var elem = elems[idx];
+
+			var selected = elem.getAttribute("data-selected") == "true";
+			if (selected)
+				elem.style = "background-color: " + highlight_color;
+			else
+				elem.style = "background-color: none";
+		}
+	}
+	
+	function check() {
+		update_state();
+		var feedback = document.getElementById("feedback");
+		var response = "All correct!!!";
+		if (numIncorrectSelected > 1)
+			response = "Some of the items you have selected are incorrect.";
+		else if (numIncorrectSelected == 1)
+			response = "One of the items you have selected is incorrect.";
+		else if (numCorrectUnsellected > 1)
+			response = "You have some more to find."
+		else if (numCorrectUnsellected == 1)
+			response = "Find one more.";
+		feedback.innerHTML = response;
+	}
+</script>
+</head>
+<body style="font-family: Sans-serif">
+<h3>Knowledge Check: Identify Attributes</h3>
+<p>Click on all the attributes defined in the <code>Change</code> class.</br>Click on all declarations of these attributes and all accesses of these attributes in the following code.</p></p>
+<pre><code style="font-size: 1.25em;">
+<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">import java.util.Scanner;</span>
+
+<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">class Change</span>{
+    <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">int dollar_count;</span>
+    <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">int quarter_count;</span>
+    <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">int dime_count;</span>
+    <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">int nickel_count;</span>
+    <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">double total;</span>
+}
+
+<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">public class ChangeMachine</span> {
+    <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">public static void main(String[] args)</span> {
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">Scanner user_input</span> = <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">new Scanner</span>(<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">System.in</span>);
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">Change myChange</span> = <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">new Change();</span>
+
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">System.out.print("Enter whole dollars: ");</span>
+        <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">myChange.dollar_count</span> = <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">user_input.nextInt();</span>
+
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">System.out.print("Enter number of quarters: ");</span>
+        <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">myChange.quarter_count</span> = <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">user_input.nextInt();</span>
+
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">System.out.print("Enter number of dimes: ");</span>
+        <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">myChange.dime_count</span> = <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">user_input.nextInt();</span>
+
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">System.out.print("Enter number of nickels: ");</span>
+        <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">myChange.nickel_count</span> = <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">user_input.nextInt();</span>
+
+        <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">myChange.total</span> = <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">myChange.dollar_count</span> + <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">0.25</span> * <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">myChange.quarter_count</span>
+                                                   + <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">0.1</span> * <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">myChange.dime_count</span>
+                                                   + <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">0.05</span> * <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">myChange.nickel_count</span>;
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">System.out.println</span>(<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">"You have: $"</span> + <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">myChange.total</span>);
+    }
+</code></pre>
+<p id="feedback"></p>
+</body>
+</html>

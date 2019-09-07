@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+	<style type="text/css">
+		#userAnswer {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  padding: 5px 10px;
+		  border: 2px solid #3399cc;
+		  -webkit-border-radius: 5px;
+		  border-radius: 5px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #66ccff;
+		}
+		button {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  cursor: pointer;
+		  padding: 5px 10px;
+		  border: 1px solid #018dc4;
+		  -webkit-border-radius: 3px;
+		  border-radius: 3px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #99CCFF;
+		  -webkit-box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		  box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		}
+	select {
+			margin: 0 auto;
+			background-color: #8bc0c6;
+		}
+		body {
+			font-family: "Arial";
+		}
+	</style>
+<body>
+	<h3>Knowledge Check: Understanding Assignment Statements</h3>
+	<p id='rubric'>Get XXX correct in a row to pass.</p>
+	
+	<pre><code><div id='problemText'> &nbsp </div></code></pre>
+	
+	<p>What will this code ouput when executed?</p>
+	
+	<input 	id='userAnswer' onkeypress='return handleEnterKey(event)'
+			type='text' name='userAnswer'
+			autofocus="autofocus" placeholder="Enter answer here">
+			
+	<button id="checkAnswer" type="button" onclick="checkAnswer()">Check Answer</button>
+	
+	<ul id="feedbackList" style="list-style-type:none">
+
+    </ul>
+	
+	<script>
+		var numCorrectInARowToPass = 9;
+		var correctAnswer;
+		var question;
+		var numCorrectInARow = 0;
+		var problemTxt = document.getElementById("problemText");
+		var feedbackLst = document.getElementById("feedbackList");
+		var userAnswer = document.getElementById('userAnswer');
+		
+		function chooseFrom(list) {
+			return list[Math.floor(Math.random()*list.length)];
+		}
+		
+		function get_int(min, max) {
+			if (min === undefined) { min = 0; } 
+			if (max === undefined) { max = 10; } 
+			var range = (max + 1) - min;
+			
+			return Math.floor(Math.random() * range) + min;
+		}
+		// =================================================
+		// BEGIN: Specialized Code
+		// -------------------------------------------------
+		function genCode(difficulty) {
+			var code = "";
+			var varNames = ['a', 'b', 'c'];
+			var variables = {}; // tracks current value of each variable as assignment statements are deed to the code
+			var idx = 0;
+			var lhs = 0;
+			var rhs =  0;
+			var varName = "";
+			var addend = 0;
+			// initialize each variable
+			for (idx in varNames) {
+				lhs = varNames[idx];
+				rhs = get_int();
+				
+				variables[lhs] = rhs;
+				
+				code += lhs + ' = ' + rhs +'\n';
+			}
+			// insert additional assignment statements
+			for (idx = 0; idx < difficulty; idx++) {
+				var choice = get_int(1, 6);
+				
+				if (choice <= 2) { // variable to variable
+					lhs = chooseFrom(varNames);
+					do { // prevent self-assignment
+						rhs = chooseFrom(varNames);
+					} while (rhs == lhs);
+				
+					variables[lhs] = variables[rhs];
+				
+					code += lhs + ' = ' + rhs + '\n';
+				}else if (choice <= 4) { // int to variable
+					lhs = chooseFrom(varNames);
+					rhs = get_int();
+				
+					variables[lhs] = rhs;
+				
+					code += lhs + ' = ' + rhs +'\n';
+				} else if (choice <= 5) { // variable with an int addend to variable
+					lhs = chooseFrom(varNames);
+					rhs = chooseFrom(varNames);
+					addend = get_int();
+				
+					variables[lhs] = (variables[rhs] + addend);
+				
+					code += lhs + ' = ' + rhs + ' + ' + addend + '\n';
+				} else  { // variable with a variable addend to variable
+					lhs = chooseFrom(varNames);
+					rhs = chooseFrom(varNames);
+					addend = chooseFrom(varNames);
+				
+					variables[lhs] = (variables[rhs] + variables[addend]);
+				
+					code += lhs + ' = ' + rhs + ' + ' + addend + '\n';
+				}
+			}
+			// select output variable
+			varName = chooseFrom(varNames);
+			correctAnswer = variables[varName];
+			
+			code += 'print(' + varName + ')\n';
+			
+			return code;
+		}
+		
+		// =================================================
+		// END: Specialized Code
+		// -------------------------------------------------
+		
+		function generateNewProblem() {
+			// complexity of expression increases as you get more correct in a row
+			var difficulty = Math.min(5, numCorrectInARow + 2);
+			
+			var code = genCode(difficulty);
+			
+			displayQuestion(code);
+			
+			userAnswer.value = '';
+			userAnswer.focus();
+		}
+		
+		function displayQuestion(code) {
+
+			problemTxt.innerHTML = code;
+			question = code;
+		}
+		
+		function checkAnswer() {
+			var guess = userAnswer.value;
+
+			if(guess == (correctAnswer)){
+			  numCorrectInARow++;
+			} else {
+			  numCorrectInARow = 0;
+			} 
+
+			giveFeedback(guess);
+
+			if(numCorrectInARow >= numCorrectInARowToPass) {
+			  endQuiz();
+			} else {
+			  generateNewProblem()
+			}
+		}
+		
+		function getTraceLink() {
+			var url = "";
+			url = "http://pythontutor.com/iframe-embed.html#code=";
+			url += encodeURIComponent(question);
+			url += "&codeDivHeight=400&codeDivWidth=350&cumulative=false";
+			url += "&curInstr=0&heapPrimitives=nevernest&origin=opt-frontend.js";
+			url += "&py=3&rawInputLstJSON=%5B%5D&textReferences=false";
+
+			var link = '<a href="' + url + '" target="_blank">trace code</a>'
+			
+			return link;
+		}
+		
+		function giveFeedback(guess) {
+			var correct = (guess == (correctAnswer)) ? "✅ " : "❌ ";
+			var node = document.createElement("LI");
+			node.innerHTML = "<pre><code>" + question +"\n" 
+			               + "CORRECT ANSWER : " + correctAnswer + " " 
+						   + getTraceLink() + "\n"
+						   + "YOUR ANSWER    : " + guess + " " + correct + "</pre></code>";
+			feedbackLst.insertBefore(node, feedbackLst.childNodes[0]);
+		}
+	  
+		function endQuiz() {
+			userAnswer.disabled = true;
+			document.getElementById("checkAnswer").disabled = true;
+			problemTxt.innerHTML = "Congratulations! You got " + numCorrectInARowToPass + " in a row.";
+		}
+		
+		function handleEnterKey(evt){
+		  var charCode = (evt.which) ? evt.which : evt.keyCode;
+		  if(evt.keyCode == 13){
+			checkAnswer();
+		  }
+		  return true;
+		}
+		document.getElementById("rubric").innerHTML = 'Get ' + numCorrectInARowToPass + ' correct in a row to pass.';
+		generateNewProblem();
+	</script>	
+</body>
+</html>

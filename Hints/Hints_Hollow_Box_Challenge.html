@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Sans-serif">
+
+<button onclick="giveHint1()">Hint #1</button>
+<p id="hint1_text"> &nbsp; </p>
+
+<button onclick="giveHint2()">Hint #2</button>
+<p id="hint2_text"> &nbsp; </p>
+
+<button onclick="giveHint3()">Hint #3</button>
+<p id="hint3_text"> &nbsp; </p>
+
+<button onclick="giveHint4()">Hint #4</button>
+<p id="hint4_text"> &nbsp; </p>
+
+<script>
+	function giveHint1() {
+		document.getElementById("hint1_text").innerHTML = 
+		"You can construct a string of 5 asterisks (stars) by using string multiplicaiton - like this:<code></br>'*' * 5</code>";
+	}
+
+	function giveHint2() {
+		document.getElementById("hint2_text").innerHTML = 
+		"You can store strings that you might re-use in a varibale - like this:<code></br>top = '*****'</br>side = '*&nbsp;&nbsp;&nbsp;*'</code>";
+	}
+	
+	function giveHint3() {
+		document.getElementById("hint3_text").innerHTML = 
+		`Here is a partial solution:</br>
+		<code>def print_hollow_box(<parameter_list>):</br>
+		&nbsp;&nbsp;top = '*****'</br>
+		&nbsp;&nbsp;side = '*&nbsp;&nbsp;&nbsp;*'</br>
+		&nbsp;&nbsp;print(top)</br>
+		&nbsp;&nbsp;print(side)</br>
+		&nbsp;&nbsp;print(side)</br>
+		&nbsp;&nbsp;print(side)</br>
+		&nbsp;&nbsp;print(top)</code>
+		`;
+	}	
+	
+	function giveHint4() {
+		document.getElementById("hint4_text").innerHTML = 
+		"You will need to include parameter variables for the width and height.";
+	}
+	
+
+</script>
+
+</body>
+</html>

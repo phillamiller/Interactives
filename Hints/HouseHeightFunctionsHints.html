@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Sans-serif">
+
+<button onclick="giveHint1()">Hint #1</button>
+<p id="hint1_text"> &nbsp; </p>
+
+<button onclick="giveHint2()">Hint #2</button>
+<p id="hint2_text"> &nbsp; </p>
+
+<button onclick="giveHint3()">Hint #3</button>
+<p id="hint3_text"> &nbsp; </p>
+
+<button onclick="giveHint4()">Solution</button>
+<p id="hint4_text"> &nbsp; </p>
+
+<script>
+function giveHint1() {
+    document.getElementById("hint1_text").innerHTML = "Start by writing just the function header.";
+}
+
+function giveHint2() {
+    var code = `def total_house_height(house_base_width, house_base_height, roof_side_length):`
+	document.getElementById("hint2_text").innerHTML = "The function header should look like this:<pre><code>"+code+"</code></pre>";
+}
+
+function giveHint3() {
+	var code = 
+`def total_house_height(house_base_width, house_base_height, roof_side_length):
+  triangle_base = house_base_width / 2
+  triangle_base_squared = triangle_base ** 2
+  hypotenuse = roof_side_length
+  hypotenuse_squared = hypotenuse ** 2
+  
+`
+    document.getElementById("hint3_text").innerHTML = "Break the function body down into a list of simple statements. Do this by breaking down the complex computation required to calculate the total hight into simpler sub-expressions and storing the intermediate results in variables. For example, you could first compute the component values of the overall equation, like this:<pre><code>"+code+"</code></pre>Then you could use these component values to compute the desired output.";
+}
+
+function giveHint4() {
+	var code = 
+`def total_house_height(house_base_width, house_base_height, roof_side_length):
+  triangle_base = house_base_width / 2
+  triangle_base_squared = triangle_base ** 2
+  hypotenuse = roof_side_length
+  hypotenuse_squared = hypotenuse * 2
+  triangle_height = math.sqrt(hypotenuse_squared - triangle_base_squared)
+  total_house_height = house_base_height + triangle_height
+  
+  return total_house_height
+`
+    document.getElementById("hint4_text").innerHTML = "This is a solution that another student worked on. It is a good start, but it does not quite work correctly. Take a look at it an see if you can fix it.<pre><code>\n"+code+"\n\n</code></pre>";
+}
+</script>
+
+</body>
+</html>

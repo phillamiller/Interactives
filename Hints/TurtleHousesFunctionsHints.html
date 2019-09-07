@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Sans-serif">
+
+<button onclick="giveHint1()">Hint #1</button>
+<p id="hint1_text"> &nbsp; </p>
+
+<button onclick="giveHint2()">Hint #2</button>
+<p id="hint2_text"> &nbsp; </p>
+
+<button onclick="giveHint3()">Hint #3</button>
+<p id="hint3_text"> &nbsp; </p>
+
+<button onclick="giveHint4()">Solution</button>
+<p id="hint4_text"> &nbsp; </p>
+
+<script>
+function giveHint1() {
+    document.getElementById("hint1_text").innerHTML = "Start by designing and writing a function to do one of the things that the program must do. For example, since, the program will need to draw rectangles, you might write a function to draw a rectangle, and name this function <code>draw_rectangle</code>; you may even decide to generalize this function so that it can be used to draw a rectangle of any given height and width.";
+}
+
+function giveHint2() {
+	var code = 
+`def draw_rectangle(height, width):
+  turtle.pendown()
+  turtle.forward(width)
+  turtle.left(90)
+  turtle.forward(height)
+  turtle.left(90)
+  turtle.forward(width)
+  turtle.left(90
+  turtle.forward(height)
+  turtle.left(90)`
+    document.getElementById("hint2_text").innerHTML = "Your <code>draw_rectangle</code> function might look something like this:<pre><code>\n"+code+"</code></pre>";
+}
+
+function giveHint3() {
+	var code = 
+`def draw_house(x, y, size):
+  # Move turtle to start position
+  move_turtle(x, y)
+  # Draw outline of the house
+  draw_rectangle(size, size)
+  # move turtle to courner of door
+  move_turtle(x + size / 3, y)
+  # Draw the door
+  draw_rectangle(size / 2, size / 3)
+  # Move turtle to corner of roof
+  move_turtle(x, y + size)
+  # draw the roof
+  draw_triangle(size)`
+    document.getElementById("hint3_text").innerHTML = "Since a house is really just a couple of rectangles and a triangles, you could write a function to draw a house of a specified size and at a specified location (x, y) like this:<pre><code>\n"+code+"\n\n</code></pre>Of course, you would have to design and write the <code>move_turtle</code> and <code>draw_triangle</code> functions as well.";
+}
+
+function giveHint4() {
+	var code = 
+`import turtle
+
+def move_turtle(x, y):
+    turtle.penup()
+    turtle.goto(x, y)
+    turtle.setheading(0)
+
+def draw_rectangle(height, width):
+    turtle.pendown()
+    turtle.forward(width)
+    turtle.left(90)
+    turtle.forward(height)
+    turtle.left(90)
+    turtle.forward(width)
+    turtle.left(90)
+    turtle.forward(height)
+    turtle.left(90)
+
+def draw_triangle(side_length):
+    turtle.pendown()
+    # need to finish this function
+
+def draw_house(x, y, size):
+  # Move turtle to start position
+  move_turtle(x, y)
+  # Draw outline of the house
+  draw_rectangle(size, size)
+  # move turtle to courner of door
+  move_turtle(x + size / 3, y)
+  # Draw the door
+  draw_rectangle(size / 2, size / 3)
+  # Move turtle to corner of roof
+  move_turtle(x, y + size)
+  # draw the roof
+  draw_triangle(size)
+
+draw_house(-180, -180, 50)
+draw_house(-50, -180, 100)
+`
+    document.getElementById("hint4_text").innerHTML = "This is a solution that was started by another student. It is a good start, but it is not quite finished. Take a look at it and see if you can finish it.<pre><code>\n"+code+"\n\n</code></pre>";
+}
+</script>
+
+</body>
+</html>

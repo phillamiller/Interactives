@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>BINARY TO HEX</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  <script language="JavaScript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .binary {
+      background-color: #ffc270;
+      width: 50px;
+      height: 50px;
+      border: 1px solid black;
+      font-size: 14pt;
+    }
+
+    .labels {
+      background-color: white;
+      width: 50px;
+      height: 50px;
+      border: 1px white;
+      font-size: 10pt;
+    }
+    .results{
+      background-color: #53bbff;
+      width: 200px;
+      height: 50px;
+      border: 1px solid black;
+      font-size: 14pt;
+    }
+    .labels-hex{
+      background-color: white;
+      width: 200px;
+      height: 50px;
+      border: 1px white;
+      font-size: 10pt;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-12 col-s-12 col-xs-12">
+        <input type="text" autocomplete="off" class="text-center labels" aria-live="assertive" aria-atomic="true" value="128" disabled style="margin-left:5%;">
+        <input type="text" autocomplete="off" class="text-center labels" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="64" disabled>
+        <input type="text" autocomplete="off" class="text-center labels" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="32" disabled>
+        <input type="text" autocomplete="off" class="text-center labels" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="16" disabled>
+        <input type="text" autocomplete="off" class="text-center labels" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="8" disabled>
+        <input type="text" autocomplete="off" class="text-center labels" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="4" disabled>
+        <input type="text" autocomplete="off" class="text-center labels" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="2" disabled>
+        <input type="text" autocomplete="off" class="text-center labels" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="1" disabled>
+      </div>
+    </div>
+    <div class="row text-center" id="binary-button">
+      <div class="col-md-12 col-s-12 col-xs-12">
+        <label>Binary</label>
+        <input type="text" autocomplete="off" class="text-center binary" id="val1" aria-live="assertive" aria-atomic="true" value="0" readonly>
+        <input type="text" autocomplete="off" class="text-center binary" id="val2" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="0" readonly>
+        <input type="text" autocomplete="off" class="text-center binary" id="val3" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="0" readonly>
+        <input type="text" autocomplete="off" class="text-center binary" id="val4" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="0" readonly>
+        <input type="text" autocomplete="off" class="text-center binary" id="val5" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="0" readonly>
+        <input type="text" autocomplete="off" class="text-center binary" id="val6" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="0" readonly>
+        <input type="text" autocomplete="off" class="text-center binary" id="val7" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="0" readonly>
+        <input type="text" autocomplete="off" class="text-center binary" id="val8" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="0" readonly>
+
+      </div>
+    </div>
+    <div class="row text-center"><div class="col-md-12 col-s-12 col-xs-12">
+        <input type="text" autocomplete="off" class="text-center labels-hex" aria-live="assertive" aria-atomic="true" style="margin-left:5%;" value="16" disabled>
+        <input type="text" autocomplete="off" class="text-center labels-hex" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" value="1" disabled>
+    </div></div>
+    <div class="row text-center">
+      <div class="col-md-12 col-s-12 col-xs-12">
+        <label>Hex</label>
+        <input type="text" autocomplete="off" class="text-center results" id="binary-result1" aria-live="assertive" aria-atomic="true" style="margin-left:2%;" readonly>
+        <input type="text" autocomplete="off" class="text-center results" id="binary-result2" aria-live="assertive" aria-atomic="true" style="margin-left:-5px;" readonly>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    function create_binary() {
+      var ids = ['val1', 'val2', 'val3', 'val4', 'val5', 'val6', 'val7', 'val8']
+      var binary_number = "";
+      for (var i = 0; i < 8; i++) {
+        binary_number += document.getElementById(ids[i]).value;
+      }
+        var binary = parseInt(binary_number);
+        var hexa = parseInt(binary, 2).toString(16).toUpperCase();
+        var list;
+        if (hexa.length == 2) {
+           list = hexa.split("");
+        }
+        else {
+          list = [];
+          list[0] = "0";
+          list[1] = hexa;
+        }
+        document.getElementById("binary-result1").value = list[0];
+        document.getElementById("binary-result2").value = list[1];
+    }
+    $('#binary-button input[type=text]').on('click', function() {
+      var value = $(this).val();
+      if (value == "1") {
+        $(this).val('0');
+      } else {
+        $(this).val('1');
+      }
+      create_binary();
+    });
+  </script>
+</body>
+
+</html>

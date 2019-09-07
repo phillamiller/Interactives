@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create Binary Places</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+</head>
+<body>
+ <div id='container'></div>
+ <br/></br>
+  <script id='template' type='text/ractive'>
+    <div class="container-fluid" style="margin-top: 1%">
+      <table class="table table-sm table-responsive table-fit" style="width:402px">
+        <thead>
+          <tr>
+            <td id="actVal0">128</td>
+            <td id="actVal1">64</td>
+            <td id="actVal2">32</td>
+            <td id="actVal3">16</td>
+            <td id="actVal4">8</td>
+            <td id="actVal5">4</td>
+            <td id="actVal6">2</td>
+            <td id="actVal7">1</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {{#each noOfDigits:i}}
+              <td id='val{{i}}' onclick="invert({{i}})">0</td>
+            {{/each}}
+          </tr>
+        </tbody>
+      </table>
+      <div>
+        {{displayComputation}}
+      </div>
+    </div>
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/ractive/0.8.1/ractive.min.js'></script>
+  <script src="https://use.fontawesome.com/41738e4da1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var ractive = new Ractive({
+    el: '#container',
+    template:'#template',
+    data:{'noOfDigits':[1,2,3,4,5,6,7,8],'displayComputation':''}
+  });
+  var result;
+  var displayComputation;
+  var x = ''
+  function invert(i){
+    var v = parseInt($('#val'+i).text());
+    if(v==0){
+      document.getElementById('val'+i).innerHTML = 1;
+    }else{
+      document.getElementById('val'+i).innerHTML = 0;
+    }
+    getCurrentValue()
+  }
+  function getCurrentValue(){
+    displayComputation = '';
+    result = 0 ;
+    for(var i=0;i<8;i++){
+
+      if(parseInt(document.getElementById('val'+i).innerHTML) == 1){
+        if(displayComputation.length > 0){
+          displayComputation += " + "
+        }
+        displayComputation += document.getElementById('actVal'+i).innerHTML
+        result += parseInt(document.getElementById('actVal'+i).innerHTML)
+      }
+
+    }
+    if(result == 0){
+      displayComputation = 0
+    }
+    displayComputation += " = " + result
+    ractive.set('displayComputation',displayComputation)
+  }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.14/iframeResizer.contentWindow.min.js"></script>
+</body>
+</html>

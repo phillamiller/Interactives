@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<style type="text/css">
+		select {
+			margin: 0 auto;
+			background-color: #8bc0c6;
+		}
+		body {
+			font-family: "Arial";
+		}
+	</style>
+<body>
+	<h3>Knowledge Check: Choose the Best Data Type</h3>
+	<p>Get 9 correct in a row to pass.</p>
+	<div id='problemText'> &nbsp </div>
+	
+	<select id="choices">
+		<option value="int">int</option>
+		<option value="float">float</option>
+		<option value="str">str</option>
+		<option value="bool">bool</option>
+	</select>
+	<button id="checkAnswer" type="button" onclick="checkAnswer()">Check Answer</button>
+	<ul id="feedbackList" style="list-style-type:none">
+
+    </ul>
+	
+	<script>
+		var correctAnswer;
+		var question;
+		var numCorrectInARow = 0;
+		var problemTxt = document.getElementById("problemText");
+		var feedbackLst = document.getElementById("feedbackList");
+		var userAnswerChc = document.getElementById('choices');
+		
+		function generateNewProblem() {
+			var problemType = Math.floor(Math.random() * 4);
+			
+			switch(problemType) {
+				case 0:
+					question = getRandomInt();
+					correctAnswer = "int";
+					break;
+				case 1:
+					question = getRandomFloat();
+					correctAnswer = "float";
+					break;
+				case 2:
+					question = getRandomStr();
+					correctAnswer = "str";
+					break;
+				case 3:
+					question = getRandomBool();
+					correctAnswer = "bool";
+					break;
+			}
+			
+			displayQuestion();
+		}
+		
+		function displayQuestion() {
+			var text = "What is the data type of this value: <code>" + question + "</code>";
+			problemTxt.innerHTML = text;
+		}
+		
+		function getRandomInt() {
+			return Math.floor(Math.random() * 2000 - 1000);
+		}
+		
+		function getRandomFloat() {
+			return Math.floor(Math.random() * 2000 - 1000) / 100.0;
+		}
+		
+		function getRandomStr() {
+			var strings = ["'Hello!'", "'Hola!'", "'abc'", "'xyz'",
+						   "'One two three'", "'1'", "'12'", "'123'",
+						   "'True'", "'False!'", "'3.14'", "'-1.5'",
+						   "'Cat'", "'Dog'", "'-55'", "'555-1212'",
+						   "'LOL'", "'YOLO'", "'I'm a string!'", "' '"];
+			var index = Math.floor(Math.random() * strings.length);
+			return strings[index];
+		}
+		
+		function getRandomBool() {
+			return (Math.random() <.5) ? "True" : "False";
+		}
+		
+		function checkAnswer() {
+			var guess = userAnswerChc.value;
+
+			if(guess == correctAnswer){
+			  numCorrectInARow++;
+			} else {
+			  numCorrectInARow = 0;
+			} 
+
+			giveFeedback(guess);
+
+			if(numCorrectInARow >= 9) {
+			  endQuiz();
+			} else {
+			  generateNewProblem()
+			}
+		}
+		
+		function giveFeedback(guess) {
+			var correct = (guess == correctAnswer) ? "✅ " : "❌ ";
+			var node = document.createElement("LI");
+			var feedback = correct + "For " + question + " the best data type is " + correctAnswer;
+			var textnode = document.createTextNode(feedback);
+			node.appendChild(textnode);
+			feedbackLst.insertBefore(node, feedbackLst.childNodes[0]);
+		}
+	  
+		  function endQuiz() {
+			document.getElementById('checkAnswer').disabled = true;
+			problemTxt.innerHTML = "Congratulations! You got 9 in a row.";
+		  }
+		
+		generateNewProblem();
+	</script>	
+</body>
+</html>

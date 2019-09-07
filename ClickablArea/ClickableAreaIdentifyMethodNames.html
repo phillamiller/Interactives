@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+	var numCorrectUnsellected = 0;
+	var numIncorrectSelected = 0;
+	var highlight_color = "gold";
+	
+	function handle_click(elem) {
+		var selected = elem.getAttribute("data-selected") == "true";
+		elem.setAttribute("data-selected", (!selected).toString());
+		
+		update_state();
+		update_ui();
+		check();
+	}
+	
+	function update_state() {
+		numCorrectUnsellected = 0;
+		numIncorrectSelected = 0;
+		
+		var elems = document.getElementsByClassName("clickable_text");
+		
+		for(idx = 0; idx < elems.length; idx++){
+			var elem = elems[idx];
+			var selected = elem.getAttribute("data-selected") == "true";
+			var is_click = elem.getAttribute("data-type") == "click";
+			
+			if (is_click && !selected)
+				numCorrectUnsellected++;
+			if (!is_click && selected)
+				numIncorrectSelected++;
+		}
+		
+		if (numCorrectUnsellected + numIncorrectSelected > 0)
+			highlight_color = "gold";
+		else
+			highlight_color = "lime";
+	}
+	
+	function update_ui() {
+		var elems = document.getElementsByClassName("clickable_text");
+		for(idx = 0; idx < elems.length; idx++){
+			var elem = elems[idx];
+
+			var selected = elem.getAttribute("data-selected") == "true";
+			if (selected)
+				elem.style = "background-color: " + highlight_color;
+			else
+				elem.style = "background-color: none";
+		}
+	}
+	
+	function check() {
+		update_state();
+		var feedback = document.getElementById("feedback");
+		var response = "All correct!!!";
+		if (numIncorrectSelected > 1)
+			response = "Some of the items you have selected are incorrect.";
+		else if (numIncorrectSelected == 1)
+			response = "One of the items you have selected is incorrect.";
+		else if (numCorrectUnsellected > 1)
+			response = "You have some more to find."
+		else if (numCorrectUnsellected == 1)
+			response = "Find one more.";
+		feedback.innerHTML = response;
+	}
+</script>
+</head>
+<body style="font-family: Sans-serif">
+<h3>Knowledge Check: Identify Methods</h3>
+<p>Click on all method names in the code below - wether the name is part of a method definition or a method call.</p></p>
+<pre><code style="font-size: 1.25em;">
+import java.util.<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">Scanner</span>;
+public class <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">Dog</span> {
+    int <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">age</span>;
+    String <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">name</span>;
+    String <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">breed</span>;
+    String <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">color</span>;
+
+    void <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">bark</span>() {
+        System.out.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">println</span>(<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">"Bark! Bark! says the "</span> + <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">color</span> + <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">" dog."</span>);
+    }
+
+    void <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">hungry</span>(){
+        System.out.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">println</span>(<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">name</span> + <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">" is whining for dinner."</span>);
+    }
+
+    void <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">sleep</span>() {
+        System.out.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">println</span>(<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">breed</span> + <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">"s are always so cute when they're sleeping."</span>);
+    }
+}
+
+public class <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">DogsAreAwesome</span> {
+    public static void <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">main</span>(String []args) {
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">Scanner user_input</span> = new Scanner(System.in);
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">Dog myDog</span> = new Dog();
+
+        System.out.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">print</span>(<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">"What's your dog's name? "</span>);
+        myDog.<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">name</span> = user_input.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">next</span>();
+
+        System.out.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">println</span>(myDog.<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">name</span> + <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">" is a great name for a dog!"</span>);
+        myDog.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">hungry</span>();
+
+        System.out.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">print</span>(<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">"How old are they? "</span>);
+        myDog.<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">age</span> = user_input.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">nextInt()</span>;
+
+        System.out.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">print</span>(<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">"What breed is your dog? "</span>);
+        myDog.<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">breed</span> = user_input.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">next</span>();
+        myDog.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">sleep</span>();
+
+        System.out.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">print</span>(<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">"What color is your dog? "</span>);
+        myDog.<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">color</span> = user_input.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">next</span>();
+        myDog.<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">bark</span>();
+    }
+}
+
+</code></pre>
+<p id="feedback"></p>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Sans-serif">
+
+<button onclick="giveHint1()">Hint #1</button>
+<p id="hint1_text"> &nbsp; </p>
+
+<button onclick="giveHint2()">Hint #2</button>
+<p id="hint2_text"> &nbsp; </p>
+
+<button onclick="giveHint3()">Hint #3</button>
+<p id="hint3_text"> &nbsp; </p>
+
+<button onclick="giveHint4()">Solution</button>
+<p id="hint4_text"> &nbsp; </p>
+
+<script>
+	function giveHint1() {
+		document.getElementById("hint1_text").innerHTML = 
+		"Don't forget to declare your variables with their data type.";
+	}
+
+	function giveHint2() {
+		document.getElementById("hint2_text").innerHTML = 
+		"Statements in Java must end with a semicolon.";
+	}
+	
+	function giveHint3() {
+		document.getElementById("hint3_text").innerHTML = 
+		"Remember that Java does not have an exponentiation operator.";
+	}
+	
+	function giveHint4() {
+	var code = 
+`class Main {
+  public static void main(String[] args) {
+    double budget = 200.0;
+    double loan_principle = 25000.0;
+    double interest_rate = 0.04;
+    int loan_months = 72;
+
+    interest_amount = interest_rate * loan_principle;
+    payment = interest_amount / (1 - Math.pow((1 + interest_rate), (-loan_months)));
+    affordable = budget > payment;
+
+    System.out.println("Loan Payment: $" + payment)
+    System.out.println("You can afford this: " + affordable)
+  }
+}
+`;
+    document.getElementById("hint4_text").innerHTML = "This is a solution that was started by another student. It is a good start, but it still has a few problems that need to be fixed. Take a look at it and see if you can finish it.<pre><code>\n"+code+"\n\n</code></pre>";
+	}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<title>HTML Tutorial</title>
+	<style>
+		button {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  cursor: pointer;
+		  padding: 5px 0.5em;
+		  border: 1px solid #018dc4;
+		  -webkit-border-radius: 3px;
+		  border-radius: 3px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #99CCFF;
+		  -webkit-box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		  box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		  width: 40ch;
+		}
+		#program, #output {
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  background: #BBDDFF;
+		  width: 40ch;
+		  min-height: 2ch;
+		  padding: 5px 0.5em;
+		}
+		code {
+			font-size: 1.25em;
+		}
+		body {
+			font-family: "Arial";
+		}
+	</style>
+<body>
+<p>Given the following unsorted list of letters:</br>
+<p><pre><code><div id="unsorted_list"></div></code></pre></p>
+<div id="target_description">Design and construct a program to</br>
+sort the letters in alphabetical order</br>
+by swapping their numeric positions.</div>
+</p>
+- - - Valid Commands - - -
+<pre><code>   swap # and #
+</code></pre>
+- - - - - - - - - - - - - - - - - - -
+<p>Enter your program below.</p>
+<textarea id="program" rows="20" cols="20">
+</textarea></br>
+<button id="run_program" type="button" onclick="run_program()">---- Run Program ----</button>
+
+<p><pre><code><div id="output"></div></code></pre></p>
+<button  style="display: none;" id="next_level" type="button" onclick="next_level()">---- Next Level ----</button>
+
+<script>
+	var level = 1;
+	var maxLevel = 5;
+	var program_text = document.getElementById("program");
+	var output = document.getElementById("output");
+	var unsorted_list = document.getElementById("unsorted_list");
+	var target_description = document.getElementById("target_description");
+	var next_level_button = document.getElementById("next_level");
+	
+	function next_level() {
+		level++;
+		if (level > maxLevel) {
+			return;
+			//award_token();
+		}
+		else {
+			puzzle = get_new_puzzle(level);
+			clear_output();
+			program_text.value = "";
+			next_level_button.style.display = "none";
+		}
+	}
+
+	function award_token() {
+		var input_code = parseInt(prompt("Please enter the INPUT CODE number:"));
+		
+		var a = Math.floor(input_code / 10000);
+		input_code -= a * 10000;
+		var b = Math.floor(input_code / 1000);
+		input_code -= b * 1000;
+		var c = Math.floor(input_code / 100);
+		input_code -= c * 100;
+		var d = Math.floor(input_code / 10);
+		input_code -= d * 10;
+		var e = input_code;
+
+		alert(a+" "+b+" "+c+" "+d+" "+e);
+	}
+	
+	function print(text) {
+		if (text == undefined)
+			text = "";
+		output.innerHTML += text;
+	}
+	
+	function println(text) {
+		if (text == undefined)
+			text = "";
+		output.innerHTML += text + "</br>";
+	}
+	
+	function clear_output() {
+		output.innerHTML = "";
+	}
+	
+	var vm = {
+			initial_state: [],
+			target_state: [],
+			current_state: []
+	};
+	
+	function run_program() {
+		clear_output();
+		indexes = "1 2 3 4 5 6 7 8 9".slice(0, vm.initial_state.length * 2);
+		println("              " + indexes);
+		println("-----------------------------");
+		println("Initial List: " + vm.initial_state);
+		println("-----------------------------");
+		
+		vm.current_state = vm.initial_state.slice();
+		
+		var instruction_count = 0;
+		
+		var program = program_text.value;
+		var lines = program.split("\n");
+		for (var idx = 0; idx < lines.length; idx++) {
+			var line = lines[idx].trim();
+			var success = execute(line, vm);
+			
+			if (success && line.trim() != "")
+				instruction_count++;
+			
+			if (! success) {
+				println("\nProgram terminated early!");
+				return;
+			}
+		}
+
+		if (vm.current_state.toString() == vm.target_state.toString()) {
+			println("\nCorrect!!!");
+			
+			if (level == maxLevel) {
+				next_level_button.innerHTML = "Congratualtions!!!\nYou have completed all levels.";
+				next_level_button.style.display = "block";
+			}
+			else {
+				next_level_button.innerHTML = "---- On to Level " + (level+1) + " ----";
+				ext_level_button.style.display = "block";
+			}
+		}
+		else {
+			println("\nYour program must end with ");
+			println("the letters sorted in ");
+			println("this order:   " + vm.target_state);
+		}
+	}
+	
+	function execute(line, vm) {
+		if (line.length == 0)
+			return true;
+		
+		var padding = "                    ";
+		var next_state = [];
+
+		var swap_command = /^swap\s+\d\s+and\s+\d$/;
+			
+		if (swap_command.test(line)) {
+			var args = line.slice(4);
+			var indexes = args.split(" and ");
+			var idx1 = parseInt(indexes[0]);
+			var idx2 = parseInt(indexes[1]);
+			if (isNaN(idx1) || idx1 < 1 || idx1 > vm.initial_state.length) {
+				println("Invalid index #: " + line);
+				return false;
+			}
+			
+			if (isNaN(idx2) || idx2 < 1 || idx2 > vm.initial_state.length) {
+				println("Invalid index #: " + line);
+				return false;
+			}
+			
+			idx1 -= 1; // vm IDs are zero based;
+			idx2 -= 1; // vm IDs are zero based;
+			
+			next_state = swap(idx1, idx2, vm.current_state);
+			vm.current_state = next_state;
+		}
+		else {
+			println("Invalid Command: " + line);
+			return false;
+		}
+		
+		println(line +  "  " + vm.current_state);
+		return true;
+	}
+	
+	function swap(idx1, idx2, current_state) {
+		new_state = current_state.slice();
+		var temp = new_state[idx1];
+		new_state[idx1] = new_state[idx2];
+		new_state[idx2] = temp;
+		
+		return new_state;
+	}
+	
+	function get_int(min, max) {
+		if (min === undefined) { min = 0; } 
+		if (max === undefined) { max = 10; } 
+		var range = max - min;
+			
+		return Math.floor(Math.random() * range + 1) + min;
+	}
+	
+	function generate_random_list_of_letters(size) {
+		var list_of_letters = ['a','b','c','d','e','f','g','h','i','j'];
+		
+		list_of_letters = list_of_letters.slice(0, size);
+		
+		for (var i = 0; i < size; i++) {
+			var j = get_int(0, size-1);
+			var temp = list_of_letters[i];
+			list_of_letters[i] = list_of_letters[j];
+			list_of_letters[j] = temp;
+		}
+		
+		return list_of_letters;
+	}
+	
+	function get_new_puzzle(level) {
+		unsorted_list.innerHTML = "";
+		
+		vm.initial_state = generate_random_list_of_letters(level + 2);
+		vm.target_state = vm.initial_state.slice();
+		vm.target_state.sort();
+		
+		indexes = "1 2 3 4 5 6 7 8 9".slice(0, vm.initial_state.length * 2);
+		
+		unsorted_list.innerHTML = indexes + '\n' + vm.initial_state;
+		
+		return vm;
+	}
+	
+	var puzzle = get_new_puzzle(level);
+</script>
+</body>
+</html>

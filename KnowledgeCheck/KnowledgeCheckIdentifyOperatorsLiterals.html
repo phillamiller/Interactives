@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+	<style type="text/css">
+		#userAnswer {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  padding: 5px 10px;
+		  border: 2px solid #3399cc;
+		  -webkit-border-radius: 5px;
+		  border-radius: 5px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #66ccff;
+		}
+		button {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  cursor: pointer;
+		  padding: 5px 10px;
+		  border: 1px solid #018dc4;
+		  -webkit-border-radius: 3px;
+		  border-radius: 3px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #99CCFF;
+		  -webkit-box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		  box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		}
+		select {
+			margin: 0 auto;
+			background-color: #8bc0c6;
+		}
+		body {
+			font-family: "Arial";
+		}
+	</style>
+<body>
+	<h3>Knowledge Check: Identify Operators and Literals</h3>
+	<p id='rubric'>Get XXX correct in a row to pass.</p>
+	
+	<pre><code><div id='problemText'> &nbsp </div></code></pre>
+	
+	<input 	id='userAnswer' onkeypress='return handleEnterKey(event)'
+			type='text' name='userAnswer' 
+			placeholder="Enter answer here">
+			
+	<button id="checkAnswer" type="button" onclick="checkAnswer()">Check Answer</button>
+	
+	<ul id="feedbackList" style="list-style-type:none">
+
+    </ul>
+	
+	<script>
+		var numOperators = 0;
+		var numLiterals = 0;
+		var numCorrectInARowToPass = 9;
+		var correctAnswer;
+		var question;
+		var numCorrectInARow = 0;
+		var problemTxt = document.getElementById("problemText");
+		var feedbackLst = document.getElementById("feedbackList");
+		var userAnswer = document.getElementById('userAnswer');
+		
+		function chooseFrom(list) {
+			return list[Math.floor(Math.random()*list.length)];
+		}
+		
+		function get_int(min, max) {
+			if (min === undefined) { min = 0; } 
+			if (max === undefined) { max = 10; } 
+			var range = (max + 1) - min;
+			
+			return Math.floor(Math.random() * range) + min;
+		}
+		// =================================================
+		// BEGIN: Expr Gen Code
+		// -------------------------------------------------
+		var gComplexity = 0;
+		var gMaxComplexity = 0;
+		
+		function number(min, max) {
+			if (min === undefined) { min = 0; } 
+			if (max === undefined) { max = 100; }
+			numLiterals++;
+			return "" + get_int(min, max);
+		}
+
+		function negExpr() {
+			numOperators++;
+			return '-' + mathExpr();
+		}
+			
+		function binOp() {
+			return ' ' + chooseFrom(['+','-','*','/','%', '**']) + ' ';
+		}
+			
+		function binOpExpr() {
+			numOperators++;
+			return mathExpr() + binOp() + mathExpr();
+		}
+			
+		function mathExpr() {
+			gComplexity += 1;
+			if (gComplexity >= gMaxComplexity) {
+				return number();
+			}
+			
+			var choices = [negExpr, negExpr, binOpExpr, binOpExpr, number]
+			
+			return chooseFrom(choices)();
+		}
+		
+		function genExpr(targetComplexity) {
+			numOperators = 0;
+			numLiterals = 0;
+			
+			if (targetComplexity === undefined) { targetComplexity = 7; } 
+			gMaxComplexity = targetComplexity;
+			gComplexity = 0;
+			
+			return mathExpr();
+		}
+
+		// =================================================
+		// END: Expr Gen Code
+		// -------------------------------------------------
+		
+		function generateNewProblem() {
+			// complexity of expression increases as you get more correct in a row
+			var complexity = Math.min(7, numCorrectInARow + 3);
+			
+			var expr = genExpr(complexity);
+			
+			if (get_int(0, 1) == 0) {
+				question = 'How many operators in this expresion?</p>';
+				correctAnswer = numOperators;
+			} else {
+				question = 'How many literals in this expresson?</p>';
+				correctAnswer = numLiterals;
+			}
+			question += expr;
+			displayQuestion(question);
+			
+			userAnswer.value = '';
+		}
+		
+		function displayQuestion(question) {
+			
+			// question += '(' + numOperators + ', ' + numLiterals + ')';
+			problemTxt.innerHTML = question;
+		}
+		
+		function checkAnswer() {
+			var guess = userAnswer.value;
+
+			if(guess == (correctAnswer)){
+			  numCorrectInARow++;
+			} else {
+			  numCorrectInARow = 0;
+			} 
+
+			giveFeedback(guess);
+
+			if(numCorrectInARow >= numCorrectInARowToPass) {
+			  endQuiz();
+			} else {
+			  generateNewProblem()
+			  userAnswer.focus();
+			}
+		}
+		
+		function giveFeedback(guess) {
+			var correct = (guess == (correctAnswer)) ? "✅ " : "❌ ";
+			var node = document.createElement("LI");
+			node.innerHTML = "<pre><code>" + question +"\n" 
+			               + "CORRECT ANSWER : " + correctAnswer + "\n"
+						   + "YOUR ANSWER    : " + guess + correct + "</pre></code>";
+			feedbackLst.insertBefore(node, feedbackLst.childNodes[0]);
+		}
+	  
+		function endQuiz() {
+			userAnswer.disabled = true;
+			document.getElementById("checkAnswer").disabled = true;
+			problemTxt.innerHTML = "Congratulations! You got " + numCorrectInARowToPass + " in a row.";
+		}
+		
+		function handleEnterKey(evt){
+		  var charCode = (evt.which) ? evt.which : evt.keyCode;
+		  if(evt.keyCode == 13){
+			checkAnswer();
+		  }
+		  return true;
+		}
+		document.getElementById("rubric").innerHTML = 'Get ' + numCorrectInARowToPass + ' correct in a row to pass.';
+		generateNewProblem();
+	</script>	
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Sans-serif">
+
+<button onclick="giveHint1()">Hint #1</button>
+<p id="hint1_text"> &nbsp; </p>
+
+<button onclick="giveHint2()">Hint #2</button>
+<p id="hint2_text"> &nbsp; </p>
+
+<button onclick="giveHint3()">Hint #3</button>
+<p id="hint3_text"> &nbsp; </p>
+
+<button onclick="giveHint4()">Hint #4</button>
+<p id="hint4_text"> &nbsp; </p>
+
+<button onclick="giveHint5()">Hint #5</button>
+<p id="hint5_text"> &nbsp; </p>
+
+<button onclick="giveHint6()">Hint #6</button>
+<p id="hint6_text"> &nbsp; </p>
+
+<script>
+	function giveHint1() {
+		document.getElementById("hint1_text").innerHTML = 
+		"Remember that comments in Java start with <code>//</code>";
+	}
+
+	function giveHint2() {
+		document.getElementById("hint2_text").innerHTML = 
+		"Remember that code bodies (for classes and methods) in Java start with a curley brace and end with a curly brace <code> { }</code>";
+	}
+	
+	function giveHint3() {
+		document.getElementById("hint3_text").innerHTML = 
+		"The header of the <code>main</code> method in Java should look like this:</br><code>public static void main(String[] args)</code>";
+	}
+	
+	function giveHint4() {
+		document.getElementById("hint4_text").innerHTML = 
+		"Remember that string literals in Java must be enclosed in double quotes only.";
+	}
+	
+	function giveHint5() {
+		document.getElementById("hint5_text").innerHTML = 
+		"Remember that to output text to the console in Java you must call the println method:</br><code>System.out.println(&lt;String&gt;);</code>";
+	}
+	
+	function giveHint6() {
+		document.getElementById("hint6_text").innerHTML =
+		"Remember that statements in Java end with a semicolon";
+	}
+</script>
+
+</body>
+</html>

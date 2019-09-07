@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Sans-serif">
+
+<button onclick="giveHint1()">Hint #1</button>
+<p id="hint1_text"> &nbsp; </p>
+
+<button onclick="giveHint2()">Hint #2</button>
+<p id="hint2_text"> &nbsp; </p>
+
+<button onclick="giveHint3()">Hint #3</button>
+<p id="hint3_text"> &nbsp; </p>
+
+<script>
+	function giveHint1() {
+		document.getElementById("hint1_text").innerHTML = "You are going to need a local variable to keep track of and count the number of times the while loop body executes, and you will probably want to initialize this counting variable to 0.";
+	}
+
+	function giveHint2() {
+		document.getElementById("hint2_text").innerHTML = "Somewhere inside the while loop body, you will want to increment the value of your counting variable.";
+	}
+	
+	function giveHint3() {
+		document.getElementById("hint3_text").innerHTML = "Don't forget to return the value stored in your counting variable at the end of the function.";
+	}
+</script>
+
+</body>
+</html>

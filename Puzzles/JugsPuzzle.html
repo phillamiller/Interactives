@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+<title>HTML Tutorial</title>
+	<style>
+		button {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  cursor: pointer;
+		  padding: 5px 0.5em;
+		  border: 1px solid #018dc4;
+		  -webkit-border-radius: 3px;
+		  border-radius: 3px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #99CCFF;
+		  -webkit-box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		  box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		  width: 40ch;
+		}
+		#program, #output {
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  background: #BBDDFF;
+		  width: 40ch;
+		  min-height: 2ch;
+		  padding: 5px 0.5em;
+		}
+		code {
+			font-size: 1.25em;
+		}
+		body {
+			font-family: "Arial";
+		}
+	</style>
+<body>
+<p>Given containers with these volumes:</br>
+<ol id="container_list">
+</ol>
+<div id="target_description">Design and construct a program to</br>
+measure out exactly 4 liters.</div>
+</p>
+- - - Valid Commands - - -
+<pre><code>   fill #
+   empty #
+   transfer # to #
+</code></pre>
+- - - - - - - - - - - - - - - - - - -
+<p>Enter your program below.</p>
+<textarea id="program" rows="20" cols="20">
+</textarea></br>
+<button id="run_program" type="button" onclick="run_program()">---- Run Program ----</button>
+
+<p><pre><code><div id="output"></div></code></pre></p>
+<button  style="display: none;" id="next_level" type="button" onclick="next_level()">---- Next Level ----</button>
+
+<script>
+	var level = 1;
+	program_text = document.getElementById("program");
+	output = document.getElementById("output");
+	container_list = document.getElementById("container_list");
+	target_description = document.getElementById("target_description");
+	next_level_button = document.getElementById("next_level");
+	
+	function next_level() {
+		level++;
+		puzzle = get_new_puzzle(3, level + 1);
+		clear_output();
+		program_text.value = "";
+		next_level_button.style.display = "none";
+	}
+	
+	function print(text) {
+		if (text == undefined)
+			text = "";
+		output.innerHTML += text;
+	}
+	
+	function println(text) {
+		if (text == undefined)
+			text = "";
+		output.innerHTML += text + "</br>";
+	}
+	
+	function clear_output() {
+		output.innerHTML = "";
+	}
+	
+	var vm = {
+			initial_state: [],
+			state: [],
+			jug_sizes: [],
+			target: 0,
+			min_actions: 0
+	};
+	
+	function run_program() {
+		clear_output();
+		println("   Container#       1,2,3");
+		println("-----------------------------");
+		println("Initial State:      " + vm.initial_state);
+		println("-----------------------------");
+		
+		vm.state = vm.initial_state.slice();
+		var instruction_count = 0;
+		
+		var program = program_text.value;
+		var lines = program.split("\n");
+		for (var idx = 0; idx < lines.length; idx++) {
+			var line = lines[idx].trim();
+			var success = execute(line, vm);
+			
+			if (line == "cheet") {
+				map(vm.jug_sizes, true);
+			}
+				
+			if (success && line.trim() != "")
+				instruction_count++;
+			
+			if (! success) {
+				println("\nProgram terminated early!");
+				return;
+			}
+		}
+		
+		if (vm.state.indexOf(vm.target) != -1) {
+			println("\nCorrect!!!");
+			if (instruction_count > vm.min_actions) {
+				println("Can you solve it in fewer steps?");
+			} else {
+				next_level_button.innerHTML = "---- On to Level " + (level+1) + " ----";
+				next_level_button.style.display = "block";
+			}
+		}
+		else {
+			println("\nYour program must end with ");
+			println(vm.target + " Liters in one of the containers.");
+		}
+	}
+	
+	function execute(line, vm) {
+		if (line.length == 0)
+			return true;
+		
+		var padding = "                    ";
+		var next_state = [];
+		
+		var fill_command = /^fill\s\d$/;
+		var empty_command = /^empty\s\d$/;
+		var transfer_command = /^transfer\s\d\sto\s\d$/;
+		
+		if (fill_command.test(line)) {
+			var jug_id = parseInt(line.slice(4));
+			if (isNaN(jug_id) || jug_id < 1 || jug_id > vm.jug_sizes.length) {
+				println("Invalid Jug ID: " + line);
+				return false;
+			}
+			
+			jug_id -= 1; // vm jug IDs are zero based;
+			
+			next_state = fill(jug_id, vm.state, vm.jug_sizes);
+			vm.state = next_state;
+			
+		} else if (empty_command.test(line)) {
+			var jug_id = parseInt(line.slice(5));
+			if (isNaN(jug_id) || jug_id < 1 || jug_id > vm.jug_sizes.length) {
+				println("Invalid Jug ID: " + line);
+				return false;
+			}
+			
+			jug_id -= 1; // vm jug IDs are zero based;
+			
+			next_state = empty(jug_id, vm.state, vm.jug_sizes);
+			vm.state = next_state;
+			
+		} else if (transfer_command.test(line)) {
+			var args = line.slice(8);
+			var jug_ids = args.split(" to ");
+			var jug_id_from = parseInt(jug_ids[0]);
+			var jug_id_to = parseInt(jug_ids[1]);
+			if (isNaN(jug_id_from) || jug_id_from < 1 || jug_id_from > vm.jug_sizes.length) {
+				println("Invalid Jug ID: " + line);
+				return false;
+			}
+			
+			if (isNaN(jug_id_to) || jug_id_to < 1 || jug_id_to > vm.jug_sizes.length) {
+				println("Invalid Jug ID: " + line);
+				return false;
+			}
+			
+			jug_id_from -= 1; // vm jug IDs are zero based;
+			jug_id_to -= 1; // vm jug IDs are zero based;
+			
+			next_state = transfer(jug_id_from, jug_id_to, vm.state, vm.jug_sizes);
+			vm.state = next_state;
+		}
+		else {
+			println("Invalid Command: " + line);
+			return false;
+		}
+		
+		println(line + padding.slice(line.length) + vm.state);
+		return true;
+	}
+	
+	function map(jug_sizes, verbose) {
+		var num_jugs = jug_sizes.length;
+		var actions = [fill_a, fill_b, 
+					   empty_a, empty_b, 
+					   transfer_a_to_b, transfer_b_to_a];
+		if (num_jugs == 3)
+		actions = [fill_a, fill_b, fill_c, 
+				   empty_a, empty_b, empty_c, 
+				   transfer_a_to_b, transfer_b_to_a, 
+				   transfer_a_to_c, transfer_c_to_a, 
+				   transfer_b_to_c, transfer_c_to_b];
+	
+		var initial_state = jug_sizes.map(function (x) {return 0});
+		var depth_of_state = {}; // make a dict to store the min depth of each reachable state
+		depth_of_state[initial_state] = 0;
+								
+		var explored_states = [];
+		var states_to_explore = [initial_state];
+		
+		var depth_of_amount = {};
+		var seen_amounts = [0];
+		
+		while (states_to_explore.length > 0) {
+			var current_state = states_to_explore.shift(); // grab first in list
+			for (var idx = 0; idx < actions.length; idx++) {
+				next_state = actions[idx](current_state, jug_sizes);
+				
+				var is_new_state = ! states_equal(next_state, current_state);
+				is_new_state = is_new_state && (! state_in(next_state, explored_states));
+				is_new_state = is_new_state && (! state_in(next_state, states_to_explore));
+				
+				if (is_new_state) {
+					states_to_explore.push(next_state);
+					depth_of_state[next_state] = depth_of_state[current_state] + 1;
+					
+					// track min depth at which each reachable amount is achieved
+					for (var i = 0; i < next_state.length; i++) {
+						var amount = next_state[i];
+						if (seen_amounts.indexOf(amount) == -1) {
+							seen_amounts.push(amount);
+							depth_of_amount[amount] = depth_of_state[current_state] + 1;
+						}
+					}
+				}
+			}
+			explored_states.push(current_state);
+		}
+		
+		if (verbose) {
+			println("=== State by Depth  ===");
+			for (var state in depth_of_state)
+				println(state + " : " + depth_of_state[state]);
+			println("=== Amount by Depth ===");
+			for (var amount in depth_of_amount)
+				println(amount + " : " + depth_of_amount[amount]);
+		}
+			
+		return [depth_of_amount, depth_of_state];
+	}
+	
+	function fill_a(current_state, jug_sizes) {
+		return fill(0, current_state, jug_sizes)
+	}
+	
+	function fill_b(current_state, jug_sizes) {
+		return fill(1, current_state, jug_sizes)
+	}
+	
+	function fill_c(current_state, jug_sizes) {
+		return fill(2, current_state, jug_sizes)
+	}
+	
+	function empty_a(current_state, jug_sizes) {
+		return empty(0, current_state);
+	}
+	
+	function empty_b(current_state, jug_sizes) {
+		return empty(1, current_state);
+	}
+	
+	function empty_c(current_state, jug_sizes) {
+		return empty(2, current_state);
+	}
+	
+	function transfer_a_to_b(current_state, jug_sizes) {
+		return transfer(0, 1, current_state, jug_sizes);
+	}
+	
+	function transfer_b_to_a(current_state, jug_sizes) {
+		return transfer(1, 0, current_state, jug_sizes);
+	}
+	
+	function transfer_a_to_c(current_state, jug_sizes) {
+		return transfer(0, 2, current_state, jug_sizes);
+	}
+	
+	function transfer_c_to_a(current_state, jug_sizes) {
+		return transfer(2, 0, current_state, jug_sizes);
+	}
+	
+	function transfer_b_to_c(current_state, jug_sizes) {
+		return transfer(1, 2, current_state, jug_sizes);
+	}
+	
+	function transfer_c_to_b(current_state, jug_sizes) {
+		return transfer(2, 1, current_state, jug_sizes);
+	}
+	
+	function fill(jug_number, current_state, jug_sizes) {
+		new_state = current_state.slice();
+		new_state[jug_number] = jug_sizes[jug_number];
+		
+		return new_state;
+	}
+	
+	function empty(jug_number, current_state) {
+		new_state = current_state.slice();
+		new_state[jug_number] = 0;
+		
+		return new_state;
+	}
+	
+	function transfer(from_jug_number, to_jug_number, current_state, jug_sizes) {
+		new_state = current_state.slice();
+		var available_space = jug_sizes[to_jug_number] - current_state[to_jug_number];
+		var amount_to_transfer = Math.min(available_space, current_state[from_jug_number]);
+		new_state[from_jug_number] -= amount_to_transfer;
+		new_state[to_jug_number] += amount_to_transfer;
+		
+		return new_state;
+	}
+	
+	function states_equal(state_1, state_2) {
+		if (state_1.length != state_2.length)
+			return false;
+			
+		for (var idx = 0; idx < state_1.length; idx++)
+			if (state_1[idx] != state_2[idx]) 
+				return false;
+
+		return true;
+	}
+	
+	function state_in(state, state_list) {
+		for (var idx = 0; idx < state_list.length; idx++)
+			if (states_equal(state, state_list[idx])) 
+				return true;
+		
+		return false;
+	}
+	
+	function depth_in(depth, depth_of_amount) {
+		for (var amount in depth_of_amount)
+			if (depth_of_amount[amount] == depth) {
+				return true;
+			}
+			
+		return false;
+	}
+	
+	function generate_puzzle(num_jugs, min_actions) {
+		var jug_sizes = [0, 0, 0]
+		var try_count = 0;
+		do {
+			if (try_count > 100) {
+				return false;
+			}
+			
+			try_count += 1;
+			
+			jug_sizes[0] = Math.floor(Math.random() * 5 + 1);
+			jug_sizes[1] = Math.floor(Math.random() * 5 + 6);
+			jug_sizes[2] = Math.floor(Math.random() * 5 + 11);
+			
+			map_data = map(jug_sizes.slice(0, num_jugs));
+		} while (! depth_in(min_actions, map_data[0]));
+		
+		jug_sizes = jug_sizes.slice(0, num_jugs);
+		
+		//map(jug_sizes, true);
+		
+		vm.initial_state = [0, 0, 0].slice(0, num_jugs);
+		vm.state = vm.initial_state.slice();
+		vm.jug_sizes = jug_sizes;
+		vm.target = get_target(map_data[0], min_actions);
+		vm.min_actions = min_actions;
+		
+		return vm;
+	}
+	
+	function get_target(amount_by_depth, min_actions) {
+		var viable_targets = [];
+		for (var amount in amount_by_depth)
+			if (amount_by_depth[amount] == min_actions)
+				viable_targets.push(parseInt(amount));
+				
+		if (viable_targets.length > 0) {
+			return viable_targets[Math.floor(Math.random() * viable_targets.length)];
+		}
+			
+		return undefined;
+	}
+	
+	function get_new_puzzle(num_jugs, min_actions) {
+		do {
+			var result = generate_puzzle(num_jugs, min_actions);
+			min_actions -= 1;
+		} while (result == false);
+		
+		container_list.innerHTML = "";
+		
+		for (var idx = 0; idx < vm.jug_sizes.length; idx++) {
+			var node = document.createElement("LI");
+			node.innerHTML = vm.jug_sizes[idx] + " Liters";
+			container_list.appendChild(node);
+		}
+		
+		target_description.innerHTML = "Design and construct a program to</br>measure out exactly " + vm.target + " liters.";
+		
+		return vm;
+	}
+	
+	var puzzle = get_new_puzzle(3, level + 1);
+</script>
+</body>
+</html>

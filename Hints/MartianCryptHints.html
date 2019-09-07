@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Sans-serif">
+
+<button onclick="giveHint1()">Hint #1</button>
+<p id="hint1_text"> &nbsp; </p>
+
+<button onclick="giveHint2()">Hint #2</button>
+<p id="hint2_text"> &nbsp; </p>
+
+<button onclick="giveHint3()">Hint #3</button>
+<p id="hint3_text"> &nbsp; </p>
+
+
+<script>
+function giveHint1() {
+    document.getElementById("hint1_text").innerHTML = "As a worst case scenario, you might be able use a brute force approach to solve this puzzle. How may possible combinartions are there to try?";
+}
+
+function giveHint2() {
+    document.getElementById("hint2_text").innerHTML = "It may be very helpful to work through the following sections on Number Systems.";
+}
+
+function giveHint3() {
+    document.getElementById("hint3_text").innerHTML = "How many different symbols are? And, if this is a positional number system, then what is the base?";
+}
+</script>
+
+</body>
+</html>

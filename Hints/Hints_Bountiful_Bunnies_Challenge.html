@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Sans-serif">
+
+<button onclick="giveHint1()">Hint #1</button>
+<p id="hint1_text"> &nbsp; </p>
+
+<button onclick="giveHint2()">Hint #2</button>
+<p id="hint2_text"> &nbsp; </p>
+
+<button onclick="giveHint3()">Hint #3</button>
+<p id="hint3_text"> &nbsp; </p>
+
+<button onclick="giveHint4()">Hint #4</button>
+<p id="hint4_text"> &nbsp; </p>
+
+<script>
+	function giveHint1() {
+		document.getElementById("hint1_text").innerHTML = 
+		"Remember that your method headers should look like this:</br>" +
+		"<code>public static void &lt;method_name&gt;(&lt;arument_list&gt;)";
+	}
+
+	function giveHint2() {
+		document.getElementById("hint2_text").innerHTML = 
+		"Remember that you method bodies must be enclosed in a pair of curly braces.";
+	}
+		
+	function giveHint3() {
+		document.getElementById("hint3_text").innerHTML = 
+		"Don't forget you semicolons at the end of satements.";
+	}
+
+	function giveHint4() {
+		document.getElementById("hint4_text").innerHTML = 
+		"Remember that Java always uses double quote marks to delimit String literals.";
+	}
+</script>
+
+</body>
+</html>

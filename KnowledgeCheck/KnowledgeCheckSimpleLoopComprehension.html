@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+	<style type="text/css">
+		#userAnswer {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  padding: 5px 10px;
+		  border: 2px solid #3399cc;
+		  -webkit-border-radius: 5px;
+		  border-radius: 5px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #66ccff;
+		}
+		button {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  cursor: pointer;
+		  padding: 5px 10px;
+		  border: 1px solid #018dc4;
+		  -webkit-border-radius: 3px;
+		  border-radius: 3px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #99CCFF;
+		  -webkit-box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		  box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		}
+		select {
+			margin: 0 auto;
+			background-color: #8bc0c6;
+		}
+		body {
+			font-family: "Arial";
+		}
+	</style>
+<body>
+	<h3>Knowledge Check: Understanding Loops</h3>
+	<p id='rubric'>Get XXX correct in a row to pass.</p>
+	
+	<pre><code><div id='problemText'> &nbsp </div></code></pre>
+	
+	<p>What value does this code output.</p>
+	
+	<input 	id='userAnswer'  onkeypress='return handleEnterKey(event)'
+			type='text' name='userAnswer' 
+			autofocus="autofocus" placeholder="Enter answer here">
+			
+	<button id="checkAnswer" type="button" onclick="checkAnswer()">Check Answer</button>
+	
+	<ul id="feedbackList" style="list-style-type:none">
+
+    </ul>
+	
+	<script>
+		var numCorrectInARowToPass = 5;
+		var correctAnswer;
+		var question;
+		var numCorrectInARow = 0;
+		var problemTxt = document.getElementById("problemText");
+		var feedbackLst = document.getElementById("feedbackList");
+		var userAnswer = document.getElementById('userAnswer');
+		
+		function chooseFrom(list) {
+			return list[Math.floor(Math.random()*list.length)];
+		}
+		
+		function get_int(min, max) {
+			if (min === undefined) { min = 0; } 
+			if (max === undefined) { max = 10; } 
+			var range = max - min;
+			
+			return Math.floor(Math.random() * range) + min;
+		}
+		
+		function get_var_name() {
+			return chooseFrom(['a', 'b', 'c', 'x', 'y', 'z']);
+		}
+		
+		function get_rel_op_inc() {
+			return chooseFrom(['<', '<=']);
+		}
+		
+		function get_rel_op_dec() {
+			return chooseFrom(['>=', '>']);
+		}
+		
+		function get_initializer(variable_name, init_value) {
+			return variable_name + ' = ' + init_value;
+		}
+		
+		function get_condition(var_name, cond_op, term_value) {
+			return var_name + ' ' + cond_op + ' ' + term_value;
+		}
+		
+		function get_incrementer(var_name, op, inc_value) {
+			return var_name + ' = ' + var_name + ' ' + op + ' '  + inc_value;
+		}
+		
+		function get_code(var_name, 
+						  init_value, term_value, inc_value, 
+						  cond_op, inc_op) {
+			// build the code components
+			var initalizer = get_initializer(var_name, init_value);
+			var condition = get_condition(var_name, cond_op, term_value);
+			var incrementer = get_incrementer(var_name, inc_op, inc_value);
+			// assemble the code
+			var code = initalizer + '\n\n';
+			code += 'while ' + condition + ':\n';
+			code += '    ' + incrementer + '\n\n';
+			code += 'print(' + var_name + ')\n';
+
+			return code;
+		}
+		
+		function inc_loop(max_iter) {
+			if (max_iter === undefined) { max_iter = 5; } 
+			// get the raw components
+			var var_name = get_var_name();
+			var init_value = get_int(0, 10);
+			var inc_value = get_int(1, 10);
+			var term_value = get_int(init_value, init_value + (inc_value * max_iter));
+			var cond_op = get_rel_op_inc();
+			var inc_op = '+';
+			// build the code
+			var code = get_code(var_name, init_value, term_value, inc_value, cond_op, inc_op);     
+			// determine the output
+			var output = 0;
+			if ((term_value - init_value) % inc_value == 0 && cond_op == '<') {
+				output = term_value;
+			} else if ((term_value - init_value) % inc_value == 0 && cond_op == '<=') {
+				output = term_value + inc_value;
+			} else {
+				output = Math.ceil((term_value - init_value) / inc_value) * inc_value + init_value;
+			}
+
+			//code += '\n' + output;
+			correctAnswer = output;
+			return code;
+		}
+		
+		function dec_loop(max_iter) {
+			if (max_iter === undefined) { max_iter = 5; } 
+			// get the raw components
+			var var_name = get_var_name();
+			var term_value = get_int(0, 10);
+			var dec_value = get_int(1, 10);
+			var init_value = get_int(term_value, term_value + (dec_value * max_iter));
+			var cond_op = get_rel_op_dec();
+			var inc_op = '-';
+			// build the code
+			var code = get_code(var_name, init_value, term_value, dec_value, cond_op, inc_op);     
+			// determine the output
+			var output = 0;
+			if ((init_value - term_value) % dec_value == 0 && cond_op == '>') {
+				output = term_value;
+			} else if ((init_value - term_value) % dec_value == 0 && cond_op == '>=') {
+				output = term_value - dec_value;
+			} else {
+				output = init_value - Math.ceil((init_value - term_value) / dec_value) * dec_value;
+			}
+
+			//code += '\n' + output;
+			correctAnswer = output;
+			return code;
+		}
+	
+		function generateNewProblem() {
+			
+			displayQuestion();
+			
+			userAnswer.value = '';
+			userAnswer.focus();
+		}
+		
+		function displayQuestion() {
+			var text = chooseFrom([inc_loop, dec_loop])();
+			problemTxt.innerHTML = text;
+			question = text;
+		}
+		
+		function checkAnswer() {
+			var guess = userAnswer.value;
+
+			if(guess == correctAnswer){
+			  numCorrectInARow++;
+			} else {
+			  numCorrectInARow = 0;
+			} 
+
+			giveFeedback(guess);
+
+			if(numCorrectInARow >= numCorrectInARowToPass) {
+			  endQuiz();
+			} else {
+			  generateNewProblem()
+			}
+		}
+		
+		function getTraceLink() {
+			var url = "";
+			url = "http://pythontutor.com/iframe-embed.html#code=";
+			url += encodeURIComponent(question);
+			url += "&codeDivHeight=400&codeDivWidth=350&cumulative=false";
+			url += "&curInstr=0&heapPrimitives=nevernest&origin=opt-frontend.js";
+			url += "&py=3&rawInputLstJSON=%5B%5D&textReferences=false";
+
+			var link = '<a href="' + url + '" target="_blank">trace code</a>'
+			
+			return link;
+		}
+		
+		function giveFeedback(guess) {
+			var correct = (guess == correctAnswer) ? "✅ " : "❌ ";
+			var node = document.createElement("LI");
+			node.innerHTML = "<pre><code>" + question + "" 
+			               + "CORRECT ANSWER : " + correctAnswer + " " 
+						   + getTraceLink() + "\n"
+						   + "YOUR ANSWER    : " + guess + " " + correct + "</pre></code>";
+			feedbackLst.insertBefore(node, feedbackLst.childNodes[0]);
+		}
+	  
+		function endQuiz() {
+			userAnswer.disabled = true;
+			document.getElementById("checkAnswer").disabled = true;
+			problemTxt.innerHTML = "Congratulations! You got ' + numCorrectInARowToPass + ' in a row.";
+		}
+		
+		function handleEnterKey(evt){
+		    var charCode = (evt.which) ? evt.which : evt.keyCode;
+		    if(evt.keyCode == 13){
+			  checkAnswer();
+		    }
+		    return true;
+		}
+		document.getElementById("rubric").innerHTML = 'Get ' + numCorrectInARowToPass + ' correct in a row to pass.';
+		generateNewProblem();
+	</script>	
+</body>
+</html>

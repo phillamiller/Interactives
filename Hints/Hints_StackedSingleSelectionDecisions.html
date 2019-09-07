@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Sans-serif">
+
+<p>1) What inputs for height and width will cause just the first decision statement's body to execute?</p>
+<button onclick="giveHint1()">Answer #1</button>
+<p id="hint1_text"> &nbsp; </p>
+
+<p>2) What inputs for height and width will cause just the second decision statement's body to execute?</p>
+<button onclick="giveHint2()">Answer #2</button>
+<p id="hint2_text"> &nbsp; </p>
+
+<p>3) What inputs for height and width will cause neither decision statement's body to execute?</p>
+<button onclick="giveHint3()">Answer #3</button>
+<p id="hint3_text"> &nbsp; </p>
+
+<p>4) What inputs for height and width will cause both decision statement's bodies to execute?</p>
+<button onclick="giveHint4()">Answer #4</button>
+<p id="hint4_text"> &nbsp; </p>
+
+<script>
+	function giveHint1() {
+		document.getElementById("hint1_text").innerHTML = 
+		"Any pair of values for <code>height</code> and <code>width</code> where the value of <code>height</code> is greater than the value of <code>width</code>, will cause just the first decision statement's body to execute. The second decision statement's body will not execute in this case because  if it is <code>True</code> that <code>height > width</code>, then the condition of the second decision statement <code>height == width</code> must be <code>False</code>. The value of <code>height</code> cannot be greater than <code>width</code> and equal to <code>width</code> at the same time.";
+	}
+
+	function giveHint2() {
+		document.getElementById("hint2_text").innerHTML = 
+		"The second decision statement's body will execute only when it is <code>True</code> that <code>height</code> is equal to </code>width</code>. When <code>height</code> is equal to </code>width</code>, then the first decision statement's body will not execute, because it's condition <code>height &gt; width</code> will always be <code>False</code>. The value of <code>height</code> cannot be greater than <code>width</code> and equal to <code>width</code> at the same time.";
+	}
+	
+	function giveHint3() {
+		document.getElementById("hint3_text").innerHTML = 
+		"The only way that neither decision statement's body will execute is when both of their conditions evaluate to <code>False</code>. This means that <code>height</code> cannot be greater than <code>width</code>, and <code>height</code> cannot be equal to <code>width</code>. The only remaining possibility is for <code>height</code> to be less than <code>width</code>. When <code>height</code> is less than <code>width</code>, then both conditions will evaluate to <code>False</code>, and neither decision statement's body will execute.";
+	}
+	
+	function giveHint4() {
+		document.getElementById("hint4_text").innerHTML = 
+		"This question may seem a bit trickier to answer. But remember that The value of <code>height</code> cannot be greater than <code>width</code> and equal to <code>width</code> at the same time. Therefore, there is no pair of values for <code>height</code> and <code>width</code> that will make both conditions <code>True</code>.";
+	}
+</script>
+
+</body>
+</html>

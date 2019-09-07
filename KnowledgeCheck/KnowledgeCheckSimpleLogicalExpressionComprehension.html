@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+	<style type="text/css">
+		#userAnswer {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  padding: 5px 10px;
+		  border: 2px solid #3399cc;
+		  -webkit-border-radius: 5px;
+		  border-radius: 5px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #66ccff;
+		}
+		button {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  cursor: pointer;
+		  padding: 5px 10px;
+		  border: 1px solid #018dc4;
+		  -webkit-border-radius: 3px;
+		  border-radius: 3px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #99CCFF;
+		  -webkit-box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		  box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		}
+		select {
+			margin: 0 auto;
+			background-color: #8bc0c6;
+		}
+		body {
+			font-family: "Arial";
+		}
+	</style>
+<body>
+	<h3>Knowledge Check: Understanding Simple Logical Expressions</h3>
+	<p id='rubric'>Get XXX correct in a row to pass.</p>
+	
+	<pre><code><div id='problemText'> &nbsp </div></code></pre>
+	
+	<p>What value does this expression evaluate to.</p>
+	
+	<input 	id='userAnswer' onkeypress='return handleEnterKey(event)'
+			type='text' name='userAnswer' 
+			autofocus="autofocus" placeholder="Enter answer here">
+			
+	<button id="checkAnswer" type="button" onclick="checkAnswer()">Check Answer</button>
+	
+	<ul id="feedbackList" style="list-style-type:none">
+
+    </ul>
+	
+	<script>
+		var numCorrectInARowToPass = 9;
+		var correctAnswer;
+		var question;
+		var numCorrectInARow = 0;
+		var problemTxt = document.getElementById("problemText");
+		var feedbackLst = document.getElementById("feedbackList");
+		var userAnswer = document.getElementById('userAnswer');
+		
+		function chooseFrom(list) {
+			return list[Math.floor(Math.random()*list.length)];
+		}
+		
+		function get_int(min, max) {
+			if (min === undefined) { min = 0; } 
+			if (max === undefined) { max = 10; } 
+			var range = (max + 1) - min;
+			
+			return Math.floor(Math.random() * range) + min;
+		}
+		// =================================================
+		// BEGIN: Expr Gen Code
+		// -------------------------------------------------
+		var gComplexity = 0;
+		var gMaxComplexity = 0;
+		
+		function boolLit() {
+			return chooseFrom(['True', 'False']);
+		}
+
+		function notExpr() {
+			return ' not ' + boolExpr();
+		}
+
+		function andExpr() {
+			return boolExpr() + ' and ' + boolExpr();
+		}
+
+		function orExpr() {
+			return boolExpr() + ' or ' + boolExpr();
+		}
+
+		function parenboolExpr() {
+			return '(' + boolExpr() + ')';
+		}
+
+		function boolExpr() {
+			gComplexity += 1;
+			if (gComplexity >= gMaxComplexity) {
+				return boolLit();
+			}
+			
+			var boolChoices = [notExpr, andExpr, orExpr];
+			
+			return chooseFrom(boolChoices)();
+		}
+		
+		function number(min=0, max=100) {
+			if (min === undefined) { min = 0; } 
+			if (max === undefined) { max = 10; }
+			
+			return "" + get_int(min, max);
+		}
+
+		function negExpr() {
+			return '- ' + mathExpr();
+		}
+
+		function parenExpr() {
+			return '(' + mathExpr() +')';
+		}
+			
+		function binOp() {
+			return ' ' + chooseFrom(['+','-','*','/','%']) + ' ';
+		}
+			
+		function binOpExpr() {
+			return mathExpr() + binOp() + mathExpr();
+		}
+		
+		function relExpr() {
+			gComplexity += 1;
+			var option = get_int(1, 2);
+			if (option == 1) { // bool
+				return boolExpr() + ' ' + chooseFrom(['==', '!=']) + ' ' + boolExpr();
+			} else { // number
+				return mathExpr() + ' ' + chooseFrom(['<', '<=', '==', '!=', '>=', '>']) + ' ' + mathExpr();
+			}
+		}
+		
+		function mathExpr() {
+			gComplexity += 1;
+			if (gComplexity >= gMaxComplexity) {
+				return number();
+			}
+			
+			var choices = [negExpr, binOpExpr, parenExpr]
+			
+			return chooseFrom(choices)();
+		}
+		
+		function genExpr(targetComplexity) {
+			if (targetComplexity === undefined) { targetComplexity = 7; } 
+			gMaxComplexity = targetComplexity;
+			gComplexity = 0;
+			
+			return boolExpr();
+		}
+		
+		function cleanExpr(expr) {
+			while(expr.indexOf('--') != -1) {
+				expr = expr.replace(/--/g, ' ');
+			}
+			
+			return expr;
+		}
+		
+		function translateToJSExpr(expr) {
+			expr = expr.replace(/and/g, '&&');
+			expr = expr.replace(/or/g, '||');
+			expr = expr.replace(/not/g, '!');
+			expr = expr.replace(/True/g, 'true');
+			expr = expr.replace(/False/g, 'false');
+			
+			return expr;
+		}
+		
+		function evalExpr(expr) {
+			return eval(translateToJSExpr(expr));
+		}
+		
+		function isGoodExpr(expr) {
+			var value = evalExpr(expr);
+			var type = typeof value;
+			
+			if (type == 'boolean') {
+				return true;
+			} else if (type == 'number') {
+				return value == Math.round(value);
+			} else {
+				return false;
+			}
+			
+		}
+		// =================================================
+		// END: Expr Gen Code
+		// -------------------------------------------------
+		
+		function generateNewProblem() {
+			// complexity of expression increases as you get more correct in a row
+			var complexity = Math.min(2, numCorrectInARow + 3);
+			
+			do {
+				var expr = genExpr(complexity);
+			} while (! isGoodExpr(expr));
+			
+			displayQuestion(expr);
+			
+			userAnswer.value = '';
+			userAnswer.focus();
+		}
+		
+		function displayQuestion(expr) {
+			correctAnswer = evalExpr(expr);
+			if (typeof correctAnswer == 'boolean') {
+				if (correctAnswer == true) {
+					correctAnswer = 'True';
+				} else {
+					correctAnswer = 'False';
+				}
+			}
+			var js_expr = translateToJSExpr(expr);
+			var text = expr;
+			// text += '\n==>' + js_expr + '\n==>' + correctAnswer;
+			problemTxt.innerHTML = text;
+			question = text;
+		}
+		
+		function checkAnswer() {
+			var guess = userAnswer.value;
+
+			if(guess == (correctAnswer)){
+			  numCorrectInARow++;
+			} else {
+			  numCorrectInARow = 0;
+			} 
+
+			giveFeedback(guess);
+
+			if(numCorrectInARow >= numCorrectInARowToPass) {
+			  endQuiz();
+			} else {
+			  generateNewProblem()
+			}
+		}
+		
+		function giveFeedback(guess) {
+			var correct = (guess == (correctAnswer)) ? "✅ " : "❌ ";
+			var node = document.createElement("LI");
+			node.innerHTML = "<pre><code>" + question +"\n" 
+			               + "CORRECT ANSWER : " + correctAnswer + "\n"
+						   + "YOUR ANSWER    : " + guess + correct + "</pre></code>";
+			feedbackLst.insertBefore(node, feedbackLst.childNodes[0]);
+		}
+	  
+		function endQuiz() {
+			userAnswer.disabled = true;
+			document.getElementById("checkAnswer").disabled = true;
+			problemTxt.innerHTML = "Congratulations! You got " + numCorrectInARowToPass + " in a row.";
+		}
+		
+		function handleEnterKey(evt){
+		  var charCode = (evt.which) ? evt.which : evt.keyCode;
+		  if(evt.keyCode == 13){
+			checkAnswer();
+		  }
+		  return true;
+		}
+		document.getElementById("rubric").innerHTML = 'Get ' + numCorrectInARowToPass + ' correct in a row to pass.';
+		generateNewProblem();
+	</script>	
+</body>
+</html>

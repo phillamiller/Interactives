@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Sans-serif">
+
+<button onclick="giveHint1()">Hint #1</button>
+<p id="hint1_text"> &nbsp; </p>
+
+<button onclick="giveHint2()">Hint #2</button>
+<p id="hint2_text"> &nbsp; </p>
+
+<button onclick="giveHint3()">Hint #3</button>
+<p id="hint3_text"> &nbsp; </p>
+
+
+<script>
+function giveHint1() {
+    document.getElementById("hint1_text").innerHTML = "What value does the program report as the smallest value? What value is the <code>smallest</code> variable initialized to?";
+}
+
+function giveHint2() {
+    document.getElementById("hint2_text").innerHTML = "What happens if the user enters only negative numbers?";
+}
+
+function giveHint3() {
+    document.getElementById("hint3_text").innerHTML = "When the program first begines, what is the smallest value seen so far?";
+}
+</script>
+
+</body>
+</html>

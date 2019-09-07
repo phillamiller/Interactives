@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+	<style type="text/css">
+		#userSequence, #userExpression {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  padding: 5px 10px;
+		  border: 2px solid #3399cc;
+		  -webkit-border-radius: 5px;
+		  border-radius: 5px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #66ccff;
+		}
+		button {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  cursor: pointer;
+		  padding: 5px 10px;
+		  border: 1px solid #018dc4;
+		  -webkit-border-radius: 3px;
+		  border-radius: 3px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #99CCFF;
+		  -webkit-box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		  box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		}
+		select {
+			margin: 0 auto;
+			background-color: #8bc0c6;
+		}
+		body {
+			font-family: "Arial";
+		}
+		pre {
+			font-size: 1.25em;
+		}
+	</style>
+<body>
+	<h3>Puzzle: Discover the Rule 08</h3>
+	<p id='rubric'>Here is a sequence of three numbers (a, b, and c) that follows a rule.</p>
+	
+	<pre><code><div id='problemText'>2 4 8</div></code></pre>
+	
+	<p>You must discover the rule.</br>
+	You may enter a sequence of three numbers (separated by spaces),</br>
+	and I will tell you if that sequence follows the rule.</p>
+	
+	<input 	id='userSequence' onkeypress='return handleEnterKeySequence(event)'
+			type='text' name='userSequence' size="40"
+			autofocus="autofocus" placeholder="Enter sequence here">
+			
+	<button id="checkSequence" type="button" onclick="checkSequence()">Check Sequence</button>
+	
+	<p>When you have discovered the rule,</br>
+	then construct a boolean expression (in terms of a, b, and c)</br>
+	that captures the rule and input your expression below.</p>
+	<p>For example, if the rule is "any three numbers in ascending order",</br>
+	then you may write an expression to capture this rule like this:
+	<pre><code>a &lt; b and b &lt; c</code></pre></p>
+	
+	<input 	id='userExpression' onkeypress='return handleExpressionEnterKey(event)'
+			type='text' name='userExpression' size="40"
+			autofocus="autofocus" placeholder="Enter expression here">
+			
+	<button id="checkExpression" type="button" onclick="checkExpression()">Check Expression</button>
+	
+	<p><code><div id='ExpressionFeedback'> &nbsp; </div></code></p>
+	
+	<ul id="SequenceFeedback" style="list-style-type:none">
+
+    </ul>
+	
+	<script>
+		var userSequence = document.getElementById('userSequence');
+		var FeedbackSequence = document.getElementById("SequenceFeedback");
+		var userExpression = document.getElementById('userExpression');
+		var feedbackExpression = document.getElementById("ExpressionFeedback");
+		
+		function followsRule(numbers) { // a * b == c
+			var a = numbers[0];
+			var b = numbers[1];
+			var c = numbers[2];
+			
+			return a * b == c;
+		}
+		
+		function checkSequence() {
+			var sequence = userSequence.value.trim();
+			var feedback = "This sequence follows the rule.";
+			var pass = true;
+			
+			var numbers = sequence.split(" ");
+			
+			if (! isThreeNumbers(numbers)) {
+				pass = false;
+				feedback = "You must enter a sequence of three integers</br>seperated by a single space.";
+			}
+			
+			if (pass && ! followsRule(numbers)) {
+				pass = false;
+				feedback = "This sequence does not follow the rule.";
+			}
+
+			giveSequenceFeedback(sequence, pass, feedback);
+			userSequence.value = "";
+		}
+		
+		function isThreeNumbers(numbers) {
+			if (numbers.length != 3)
+				return false;
+			
+			for (var idx = 0; idx < numbers.length; idx++) {
+				numbers[idx] = parseInt(numbers[idx]);
+				
+				if (isNaN(numbers[idx])) {
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		
+		function giveSequenceFeedback(guess, pass, feedback) {
+			var correct = pass ? "✅ " : "❌ ";
+			var node = document.createElement("LI");
+			node.innerHTML = "<pre><code>" + guess + " " + correct + "\n" 
+			               + feedback + "\n</pre></code>";
+			FeedbackSequence.insertBefore(node, FeedbackSequence.childNodes[0]);
+		}
+		
+		function getUserExpressionAsPython() {
+			var expr = userExpression.value;
+			expr = expr.replace(/not/g, "!");
+			expr = expr.replace(/and/g, "&&");
+			expr = expr.replace(/or/g, "||");
+			expr = expr.replace(/True/g, "true");
+			expr = expr.replace(/False/g, "false");
+			
+			return expr;
+		}
+		
+		function checkExpression() {
+			var numTests = 100;
+			var expr = getUserExpressionAsPython();
+			
+			for (var count = 0; count < numTests; count++) {
+				expected = count % 2 == 0; // alternating test data follows rule / not follows rule
+				
+				test = getTestSet(expected);
+				var a = test[0]; var b = test[1]; var c = test[2];
+				var actual = eval(expr);
+				
+				console.log(expr + " - " + expected + " - " + actual + " - " + test);
+				if (actual != expected) {
+					var feedback = a + ' ' + b + ' ' + c + ' does ';
+					if (! expected) feedback += 'not ';
+					feedback += 'follow the rule.';
+					feedbackExpression.innerHTML = feedback;
+					return;
+				}
+			}
+			
+			feedbackExpression.innerHTML = "CORRECT!";
+		}
+		
+		var testSetsPassing = [];
+		var testSetsFailing = [];
+		
+		function genTestSets() {
+			for (var a = 0; a < 50; a++)
+				for (var b = 0; b < 50; b++)
+					for (var c = 0; c < 50; c++) {
+						numbers = [a, b, c];
+						if (followsRule(numbers))
+							testSetsPassing.push(numbers);
+						else
+							testSetsFailing.push(numbers);
+					}
+		}
+		
+		function getTestSet(passing) {
+			var idx = 0;
+			if (passing) {
+				idx = Math.floor(Math.random() * testSetsPassing.length);
+				return testSetsPassing[idx];
+			} else {
+				idx = Math.floor(Math.random() * testSetsFailing.length);
+				return testSetsFailing[idx];
+			}
+		}
+		
+		function handleEnterKeySequence(evt){
+		  var charCode = (evt.which) ? evt.which : evt.keyCode;
+		  if(evt.keyCode == 13){
+			checkSequence();
+		  }
+		  return true;
+		}
+		
+		function handleExpressionEnterKey(evt){
+		  var charCode = (evt.which) ? evt.which : evt.keyCode;
+		  if(evt.keyCode == 13){
+			checkExpression();
+		  }
+		  return true;
+		}
+
+		genTestSets();
+	</script>	
+</body>
+</html>

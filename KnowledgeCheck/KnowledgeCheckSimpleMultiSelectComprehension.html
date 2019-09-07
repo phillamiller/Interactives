@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+	<style type="text/css">
+		#userAnswer {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  padding: 5px 10px;
+		  border: 2px solid #3399cc;
+		  -webkit-border-radius: 5px;
+		  border-radius: 5px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #66ccff;
+		}
+		button {
+		  display: inline-block;
+		  -webkit-box-sizing: content-box;
+		  -moz-box-sizing: content-box;
+		  box-sizing: content-box;
+		  cursor: pointer;
+		  padding: 5px 10px;
+		  border: 1px solid #018dc4;
+		  -webkit-border-radius: 3px;
+		  border-radius: 3px;
+		  font: normal 16px/normal "Lucida Console", Monaco, monospace;
+		  color: rgba(0,0,0,1);
+		  -o-text-overflow: clip;
+		  text-overflow: clip;
+		  background: #99CCFF;
+		  -webkit-box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		  box-shadow: 3px 3px 2px 0 rgba(0,0,0,0.2) ;
+		}
+		select {
+			margin: 0 auto;
+			background-color: #8bc0c6;
+		}
+		body {
+			font-family: "Arial";
+		}
+	</style>
+<body>
+	<h3>Knowledge Check: Understanding Simple Multiple Selection Decisions</h3>
+	<p id='rubric'>Get XXX correct in a row to pass.</p>
+	
+	<pre><code><div id='problemText'> &nbsp </div></code></pre>
+	
+	<p>What value does this code output.</p>
+	
+	<input 	id='userAnswer'  onkeypress='return handleEnterKey(event)'
+			type='text' name='userAnswer' 
+			autofocus="autofocus" placeholder="Enter answer here">
+			
+	<button id="checkAnswer" type="button" onclick="checkAnswer()">Check Answer</button>
+	
+	<ul id="feedbackList" style="list-style-type:none">
+
+    </ul>
+	
+	<script>
+		var numCorrectInARowToPass = 9;
+		var correctAnswer;
+		var question;
+		var numCorrectInARow = 0;
+		var problemTxt = document.getElementById("problemText");
+		var feedbackLst = document.getElementById("feedbackList");
+		var userAnswer = document.getElementById('userAnswer');
+		
+		function chooseFrom(list) {
+			return list[Math.floor(Math.random()*list.length)];
+		}
+		
+		function get_int(min, max) {
+			if (min === undefined) { min = 0; } 
+			if (max === undefined) { max = 10; } 
+			var range = max - min;
+			
+			return Math.floor(Math.random() * range + 1) + min;
+		}
+		
+		function get_var_name() {
+			return chooseFrom(['x', 'y', 'z']);
+		}
+		
+		//=======================================
+		function simple_cond(variables) {
+			var cond = "";
+			var var_names = ['x', 'y', 'z'];
+			var rel_ops = ['<', '<=', '==', '!=', '>=', '>'];
+			var var1 = chooseFrom(var_names);
+			var rel_op = chooseFrom(rel_ops);
+			var rhs = var1;
+			if (get_int(1,2) == 1) {
+				while (rhs == var1) {
+					rhs = chooseFrom(var_names);
+				}
+			} else {
+				rhs = get_int();
+			}
+				
+			cond += var1 + ' ' + rel_op + ' ' + rhs;
+			
+			return cond;
+		}
+		
+		function make_cond(variables, cond_complexity) {
+			if (cond_complexity === undefined) {cond_complexity = 1;}
+			var cond = simple_cond(variables);
+			var log_ops = ['and', 'or'];
+			var log_op = '';
+
+			while (cond_complexity > 1) {
+				log_op = chooseFrom(log_ops);
+
+				cond += ' ' + log_op + ' ' + simple_cond(variables);
+
+				cond_complexity -= 1;
+			}
+
+			return cond;
+		}
+		
+		function gen_multi_selec(num_selecs, cond_complexity) {
+			if (num_selecs === undefined) {num_selecs = 1;}
+			if (cond_complexity === undefined) {cond_complexity = 1;}
+			
+			var code = "";
+			var cond = '';
+			var cond_is_true = '';
+			var body = '';
+			var lhs = '';
+			var rhs = '';
+			var addend = '';
+			var var_name = '';
+			
+			// initialize variables
+			var var_names = ['x', 'y', 'z'];
+			var output_var = chooseFrom(var_names);
+			var variables = {'x':get_int(), 'y':get_int(), 'z':get_int()};
+			for (var_name in variables) {
+				code += var_name + ' = ' + variables[var_name] + '\n';
+			}
+
+			code += '\n';
+
+			// build multi select structures
+			var isFirstTrueCondition = false;
+			var foundFirstTrueContition = false;
+			while (num_selecs > 0) {
+				num_selecs -= 1;
+				cond = make_cond(variables, cond_complexity);
+				
+				var conditionIsTrue = eval_cond(cond, variables);
+				if (conditionIsTrue && foundFirstTrueContition == false) {
+					foundFirstTrueContition = true;
+					isFirstTrueCondition = true;
+				} else {
+					isFirstTrueCondition = false;
+				}
+
+				// build the body
+				body = "";
+				var idx = 0;
+				var lhs_choices = [chooseFrom(var_names), output_var];
+				while (idx < 2) {
+					lhs = lhs_choices[idx];
+					idx += 1;
+					rhs = chooseFrom(var_names);
+					addend = get_int();
+					body += '    ' + lhs + ' = ' + rhs + ' + ' + addend + '\n';
+					if (isFirstTrueCondition) {
+						variables[lhs] = variables[rhs] + addend;
+					}
+				}
+
+				code += 'if ' + cond + ':\n';
+				code += body;
+				
+				if (num_selecs > 0) {
+					code += 'el';
+				}
+			}
+			// build else clause
+				body = "";
+				idx = 0;
+				lhs_choices = [chooseFrom(var_names), output_var];
+				while (idx < 2) {
+					lhs = lhs_choices[idx];
+					idx += 1;
+					rhs = chooseFrom(var_names);
+					addend = get_int();
+					body += '    ' + lhs + ' = ' + rhs + ' + ' + addend + '\n';
+					if (foundFirstTrueContition == false) {
+						variables[lhs] = variables[rhs] + addend;
+					}
+				}
+				
+				code += 'else:\n';
+				code += body + '\n';
+			
+			code += 'print(' + output_var + ')\n';
+			
+			output_val = variables[output_var];
+			//code += 'OUTPUT: ' + output_val +'\n\n';
+			correctAnswer = output_val;
+			return code;
+		}
+		
+		function translateToJSExpr(expr) {
+			expr = expr.replace(/and/g, '&&');
+			expr = expr.replace(/or/g, '||');
+			expr = expr.replace(/not/g, '!');
+			expr = expr.replace(/True/g, 'true');
+			expr = expr.replace(/False/g, 'false');
+			
+			return expr;
+		}
+		
+		function evalExpr(expr) {
+			return eval(translateToJSExpr(expr));
+		}
+		
+		function eval_cond(cond, variables) {
+			for (var_name in variables) {
+				while (cond.indexOf(var_name) != 0-1) {
+					cond = cond.replace(var_name, ""+variables[var_name]);
+				}
+			}
+
+			return evalExpr(cond);
+		}
+
+		//=======================================
+		function generateNewProblem() {
+			
+			displayQuestion();
+			
+			userAnswer.value = '';
+			userAnswer.focus();
+		}
+		
+		function displayQuestion() {
+			var num_selecs = 1;
+			var cond_complexity = Math.floor(numCorrectInARow / 7) + 1;
+			var text = gen_multi_selec(num_selecs, cond_complexity);
+			problemTxt.innerHTML = text;
+			question = text;
+		}
+		
+		function checkAnswer() {
+			var guess = userAnswer.value;
+
+			if(guess == correctAnswer){
+			  numCorrectInARow++;
+			} else {
+			  numCorrectInARow = 0;
+			} 
+
+			giveFeedback(guess);
+
+			if(numCorrectInARow >= numCorrectInARowToPass) {
+			  endQuiz();
+			} else {
+			  generateNewProblem()
+			}
+		}
+		
+		function getTraceLink() {
+			var url = "";
+			url = "http://pythontutor.com/iframe-embed.html#code=";
+			url += encodeURIComponent(question);
+			url += "&codeDivHeight=400&codeDivWidth=350&cumulative=false";
+			url += "&curInstr=0&heapPrimitives=nevernest&origin=opt-frontend.js";
+			url += "&py=3&rawInputLstJSON=%5B%5D&textReferences=false";
+
+			var link = '<a href="' + url + '" target="_blank">trace code</a>'
+			
+			return link;
+		}
+		
+		function giveFeedback(guess) {
+			var correct = (guess == correctAnswer) ? "✅ " : "❌ ";
+			var node = document.createElement("LI");
+			node.innerHTML = "<pre><code>" + question + "" 
+			               + "CORRECT ANSWER : " + correctAnswer + " " 
+						   + getTraceLink() + "\n"
+						   + "YOUR ANSWER    : " + guess + " " + correct + "</pre></code>";
+			feedbackLst.insertBefore(node, feedbackLst.childNodes[0]);
+		}
+	  
+		function endQuiz() {
+			userAnswer.disabled = true;
+			document.getElementById("checkAnswer").disabled = true;
+			problemTxt.innerHTML = "Congratulations! You got " + numCorrectInARowToPass + " in a row.";
+		}
+		
+		function handleEnterKey(evt){
+		    var charCode = (evt.which) ? evt.which : evt.keyCode;
+		    if(evt.keyCode == 13){
+			  checkAnswer();
+		    }
+		    return true;
+		}
+		document.getElementById("rubric").innerHTML = 'Get ' + numCorrectInARowToPass + ' correct in a row to pass.';
+		generateNewProblem();
+	</script>	
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+	var numCorrectUnsellected = 0;
+	var numIncorrectSelected = 0;
+	var highlight_color = "gold";
+	
+	function handle_click(elem) {
+		var selected = elem.getAttribute("data-selected") == "true";
+		elem.setAttribute("data-selected", (!selected).toString());
+		
+		update_state();
+		update_ui();
+		check();
+	}
+	
+	function update_state() {
+		numCorrectUnsellected = 0;
+		numIncorrectSelected = 0;
+		
+		var elems = document.getElementsByClassName("clickable_text");
+		
+		for(idx = 0; idx < elems.length; idx++){
+			var elem = elems[idx];
+			var selected = elem.getAttribute("data-selected") == "true";
+			var is_click = elem.getAttribute("data-type") == "click";
+			
+			if (is_click && !selected)
+				numCorrectUnsellected++;
+			if (!is_click && selected)
+				numIncorrectSelected++;
+		}
+		
+		if (numCorrectUnsellected + numIncorrectSelected > 0)
+			highlight_color = "gold";
+		else
+			highlight_color = "lime";
+	}
+	
+	function update_ui() {
+		var elems = document.getElementsByClassName("clickable_text");
+		for(idx = 0; idx < elems.length; idx++){
+			var elem = elems[idx];
+
+			var selected = elem.getAttribute("data-selected") == "true";
+			if (selected)
+				elem.style = "background-color: " + highlight_color;
+			else
+				elem.style = "background-color: none";
+		}
+	}
+	
+	function check() {
+		update_state();
+		var feedback = document.getElementById("feedback");
+		var response = "All correct!!!";
+		if (numIncorrectSelected > 1)
+			response = "Some of the items you have selected are incorrect.";
+		else if (numIncorrectSelected == 1)
+			response = "One of the items you have selected is incorrect.";
+		else if (numCorrectUnsellected > 1)
+			response = "You have some more to find."
+		else if (numCorrectUnsellected == 1)
+			response = "Find one more.";
+		feedback.innerHTML = response;
+	}
+</script>
+</head>
+<body style="font-family: Sans-serif">
+<h3>Knowledge Check: Identify Public and Private Members</h3>
+<p>Click on all of the lines that will cause an error because of an attempt to access a private variable inappropriatly.</p></p>
+<pre><code style="font-size: 1.25em;">
+<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">class House {</span>
+    <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">public String family_name;</span>
+    <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">public int address_number;</span>
+    <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">private static int neighborhood_size;</span>
+
+    <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">House(String initial_name) {</span>
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">family_name = initial_name;</span>
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">neighborhood_size++;</span>
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">address_number = neighborhood_size;</span>
+    }
+
+    <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">public int get_neighborhood_size(){</span>
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">return neighborhood_size;</span>
+    }
+
+    <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">private static void set_neighborhood_size(int new_size){</span>
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">neighborhood_size = new_size;</span>
+    }
+
+    <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">public void print_info() {</span>
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">System.out.println("The " + family_name + " family lives at house #" + address_number + ".");</span>
+    }
+}
+
+<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">public class Driver{</span>
+    <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">public static void main(String []args){</span>
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">House.set_neighborhood_size(3);</span>
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">House first_house = new House("Meuth");</span>
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">first_house.set_neighborhood_size(2);</span>
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">House second_house = new House("Lopez");</span>
+        <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">House.neighborhood_size = 1;</span>
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">House third_house = new House("Weber");</span>
+        <span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">System.out.println("There are " + House.neighborhood_size + " houses in this neighborhood.");</span>
+
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">first_house.print_info();</span>
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">second_house.print_info();</span>
+        <span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">third_house.print_info();</span>
+    }
+}
+
+</code></pre>
+<p id="feedback"></p>
+</body>
+</html>

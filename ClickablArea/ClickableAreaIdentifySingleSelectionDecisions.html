@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+	var numCorrectUnsellected = 0;
+	var numIncorrectSelected = 0;
+	var highlight_color = "gold";
+	
+	function handle_click(elem) {
+		var selected = elem.getAttribute("data-selected") == "true";
+		elem.setAttribute("data-selected", (!selected).toString());
+		
+		update_state();
+		update_ui();
+		check();
+	}
+	
+	function update_state() {
+		numCorrectUnsellected = 0;
+		numIncorrectSelected = 0;
+		
+		var elems = document.getElementsByClassName("clickable_text");
+		
+		for(idx = 0; idx < elems.length; idx++){
+			var elem = elems[idx];
+			var selected = elem.getAttribute("data-selected") == "true";
+			var is_click = elem.getAttribute("data-type") == "click";
+			
+			if (is_click && !selected)
+				numCorrectUnsellected++;
+			if (!is_click && selected)
+				numIncorrectSelected++;
+		}
+		
+		if (numCorrectUnsellected + numIncorrectSelected > 0)
+			highlight_color = "gold";
+		else
+			highlight_color = "lime";
+	}
+	
+	function update_ui() {
+		var elems = document.getElementsByClassName("clickable_text");
+		for(idx = 0; idx < elems.length; idx++){
+			var elem = elems[idx];
+
+			var selected = elem.getAttribute("data-selected") == "true";
+			if (selected)
+				elem.style = "background-color: " + highlight_color;
+			else
+				elem.style = "background-color: none";
+		}
+	}
+	
+	function check() {
+		update_state();
+		var feedback = document.getElementById("feedback");
+		var response = "All correct!!!";
+		if (numIncorrectSelected > 1)
+			response = "Some of the items you have selected are incorrect.";
+		else if (numIncorrectSelected == 1)
+			response = "One of the items you have selected is incorrect.";
+		else if (numCorrectUnsellected > 1)
+			response = "You have some more to find."
+		else if (numCorrectUnsellected == 1)
+			response = "Find one more.";
+		feedback.innerHTML = response;
+	}
+</script>
+</head>
+<body style="font-family: Sans-serif">
+<h3>Knowledge Check: Identify Single Selection Decision Structures</h3>
+<p>Click on all Single Selection Decision Structures in the following code.</p>
+<p>Remember that all  Single Selection Decision Structures have an identifiable syntactical form.</p></p>
+<pre><code style="font-size: 1.25em;">
+<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">def print_bunnies(how_many):
+    print(' (\(\     ' * how_many)
+    print(' (-.-)    ' * how_many)
+    print(' O_(")(") ' * how_many)</span>
+
+<span data-type="no_click" class="clickable_text" onclick="handle_click(this)" data-selected="false">count = int(input('How many bunnies do you want? '))</span>
+
+<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">if count > 5:
+    print(count, 'is a lot of bunnies!')
+    print('I am very sorry, but I cannot')
+    print('disply that many bunnies.')</span>
+
+<span data-type="click" class="clickable_text" onclick="handle_click(this)" data-selected="false">if count <= 5:
+    print('Here you go ...')
+    print_bunnies(count)</span>
+</code></pre>
+<p id="feedback"></p>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Sans-serif">
+
+<button onclick="giveHint1()">Hint #1</button>
+<p id="hint1_text"> &nbsp; </p>
+
+<button onclick="giveHint2()">Hint #2</button>
+<p id="hint2_text"> &nbsp; </p>
+
+<button onclick="giveHint3()">Hint #3</button>
+<p id="hint3_text"> &nbsp; </p>
+
+<button onclick="giveHint4()">Hint #4</button>
+<p id="hint4_text"> &nbsp; </p>
+
+<button onclick="giveHint5()">Hint #5</button>
+<p id="hint5_text"> &nbsp; </p>
+
+<button onclick="giveHint6()">Hint #6</button>
+<p id="hint6_text"> &nbsp; </p>
+
+<script>
+	function giveHint1() {
+		document.getElementById("hint1_text").innerHTML = 
+		"Remeber that Java uses <code>!</code> as its <code>not</code> operator.";
+	}
+
+	function giveHint2() {
+		document.getElementById("hint2_text").innerHTML = 
+		"Remeber that Java uses <code>&&</code> as its <code>and</code> operator.";
+	}
+
+	function giveHint3() {
+		document.getElementById("hint3_text").innerHTML = 
+		"Remeber that Java uses <code>||</code> as its <code>or</code> operator.";
+	}
+
+	function giveHint4() {
+		document.getElementById("hint4_text").innerHTML = 
+		"Remeber that you must declare all variables in Java.";
+	}
+
+	function giveHint5() {
+		document.getElementById("hint5_text").innerHTML = 
+		"Don't forget the semicolons at the ends of statements.";
+	}
+
+	function giveHint6() {
+		document.getElementById("hint6_text").innerHTML = 
+		"Java will allow you to concatenate a number or a boolean on to a String - you do not have to cast or convert for this.";
+	}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+
+<html>
+	<head>
+		<title> ASCII Converter </title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css" />
+
+		<!-- Latest compiled and minified JavaScript -->
+ 		<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+		<script>
+			function convert() {
+
+				var output=document.getElementById("ipRes");
+				var input=document.getElementById("ipText").value;
+				var select = $('#ddConvert :selected').text();
+				output.value = "";
+				var base;
+				var pad;
+				if     (select == "Binary" ) { base =  2; pad = 8}
+				else if(select == "Decimal") { base = 10; pad = 3}
+				else if(select == "Hex"    ) { base = 16; pad = 2}
+				
+				for (i=0; i < input.length; i++) {
+					output.value += input[i]
+									.charCodeAt(0)
+									.toString(base)
+									.padStart(pad, "0")
+									.toUpperCase() 
+									+ " ";
+		    }
+		}
+
+		</script>
+		<style type="text/css">
+		    select {
+		        margin: 0 auto;
+		        background-color: #8bc0c6;
+		    }
+			textarea {
+			    font-family: "Courier";
+			}
+		</style>
+
+	</head>
+
+ 	<body style="margin-left: 10px">
+	 	<h3> Text to ASCII Converter </h3>
+	 	<p>Text:</p>
+		<textarea id="ipText" rows="4" cols="50" ></textarea>
+		<br/> &nbsp;<br/>
+		<p>Output:
+		
+		<select class= "selectpicker btn" id = "ddConvert" name="Convert to">
+		  <option value="1">Binary</option>
+		  <option value="2">Decimal</option>
+		  <option value="3">Hex</option>
+		</select></p>
+		<textarea id="ipRes" rows="4" cols="50" disabled></textarea>
+
+	</body>
+
+	<script>
+         $("#ipText").keyup(convert);
+		 $("#ddConvert").change(convert);
+	</script>
+</html>

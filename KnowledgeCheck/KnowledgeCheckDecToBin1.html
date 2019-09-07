@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dec to Bin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+</head>
+<body>
+  <div id='container'></div>
+  <script id='template' type='text/ractive'>
+    <div class="container-fluid" style="margin-top:1%">
+      <h3><b>Knowledge Check: Decimal to Binary</b></h3>
+      <p id='i1' style="font-weight:bold;font-size:18px">{{val1}}</p>
+      <input id='result' type='text' name='result' value='{{output}}' class="form-control col-xs-1" onkeypress="return isNumberKey(event)" placeholder="Enter Binary value here" style='margin-right:10px;width:182px'>
+      <input id='count' type='button' value='Next' onclick='dectoBin()' class="btn btn-primary" style="line-height: 20px">
+      <ul id='list-holder' style='padding: 0; list-style-type: none;'></ul>
+      <br/>
+    </div>
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/ractive/0.8.1/ractive.min.js'></script>
+  <script src="https://use.fontawesome.com/41738e4da1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script>
+    var ractive = new Ractive({
+      el: '#container',
+      template:'#template',
+      data: { val1: generatevalue()}   
+    });
+    function generatevalue(){
+      var randomNumber = Math.floor(Math.random() * 99);
+      return randomNumber;
+    }; 
+    function isNumberKey(evt){
+      var charCode = (evt.which) ? evt.which : evt.keyCode;
+      if(evt.keyCode == 13){
+        dectoBin();
+        return true;
+      }
+      else if (charCode >= 48 && charCode <= 49){
+        return true;
+      }
+      return false;
+    }
+    var maxTrials = 0;
+    function dectoBin() {
+      var decimal = parseInt($('#i1').text());
+      var binary =  decimal.toString(2);
+      var userEnteredInput = $('#result').val().replace(/\s/g,'');
+      binary = ("000000000" + binary).substr(-8);
+      userEnteredInput = ("000000000" + userEnteredInput).substr(-8);
+      if(binary == userEnteredInput && maxTrials < 3){
+        $('#list-holder').prepend('<li>'+ decimal +'&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i>&nbsp;'+userEnteredInput.substr(0,4)+" "+userEnteredInput.substr(4)+'&nbsp;<i class="fa fa-check" aria-hidden="true" style="color:green"></i>'+'</li>');
+        maxTrials++;
+        ractive.set('val1',generatevalue());  
+        ractive.set('output','');
+        document.getElementById('result').focus();
+      } else if(binary != userEnteredInput && maxTrials < 3){
+        $('#list-holder').prepend('<li>'+ decimal +'&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i>&nbsp;'+userEnteredInput.substr(0,4)+" "+userEnteredInput.substr(4)+'&nbsp;<i class="fa fa-times" aria-hidden="true" style="color:red"></i>'+'Correct Binary value is: '+binary.substr(0,4)+" "+binary.substr(4) +'</li>');
+        maxTrials = 0;
+        ractive.set('val1',generatevalue());  
+        ractive.set('output','');
+        document.getElementById('result').focus();
+      } 
+      if(maxTrials >= 3){
+        $('#list-holder').prepend('<li>'+ '&nbsp;'+'<b>You got 3 in a row, Congratulations! Quiz Complete.</b>'+'&nbsp;'+'</li>');
+        document.getElementById('count').disabled = true;
+        document.getElementById('result').disabled = true;
+      } 
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.14/iframeResizer.contentWindow.min.js"></script>
+</body>
+</html>

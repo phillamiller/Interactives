@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Sans-serif">
+
+<button onclick="giveHint1()">Hint #1</button>
+<p id="hint1_text"> &nbsp; </p>
+
+<script>
+	function giveHint1() {
+		document.getElementById("hint1_text").innerHTML = `<iframe width="800" height="400" frameborder="0" src="https://pythontutor.com/iframe-embed.html#code=start%20%3D%2010%0Aend%20%3D%201%0A%0Acount%20%3D%20start%0A%20%0Awhile%20count%20%3C%3D%20end%3A%0A%20%20print%28count%29%0A%20%20count%20%3D%20count%20%2B%201%0A%20%20%0Aprint%28'Done!'%29&codeDivHeight=400&codeDivWidth=350&cumulative=false&curInstr=0&heapPrimitives=nevernest&origin=opt-frontend.js&py=3&rawInputLstJSON=%5B%5D&textReferences=false"> </iframe>`;
+	}
+
+</script>
+
+</body>
+</html>

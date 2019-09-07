@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Sans-serif">
+
+<button onclick="giveHint1()">Hint #1</button>
+<p id="hint1_text"> &nbsp; </p>
+
+<button onclick="giveHint2()">Hint #2</button>
+<p id="hint2_text"> &nbsp; </p>
+
+
+<script>
+	function giveHint1() {
+		document.getElementById("hint1_text").innerHTML = "Try Starting in the lower left corner.";
+	}
+
+	function giveHint2() {
+		document.getElementById("hint2_text").innerHTML = "Try to trace an N first and trace a Z last.";
+	}
+</script>
+
+</body>
+</html>
